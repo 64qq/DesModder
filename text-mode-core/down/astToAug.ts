@@ -740,11 +740,10 @@ export function childExprToAug(
       };
     case "AssignmentExpression":
       return assignment(expr);
-    default:
-      expr satisfies never;
-      throw new Error(
-        `Programming Error: Unexpected AST node ${(expr as any).type}`
-      );
+    default: {
+      const { type } = expr satisfies never;
+      throw new Error(`Programming Error: Unexpected AST node ${type}`);
+    }
   }
 }
 

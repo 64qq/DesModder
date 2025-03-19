@@ -212,9 +212,10 @@ function childNodeToStringNoParen(
           return `\\frac{${binopLeft}}{${binopRight}}`;
         case "Exponent":
           return binopLeft + "^{" + binopRight + "}";
-        default:
-          e satisfies never;
-          throw new Error(`Unexpected BinaryOperator ${(e as any).name}`);
+        default: {
+          const { name } = e satisfies never;
+          throw new Error(`Unexpected BinaryOperator ${name}`);
+        }
       }
     }
     case "Negative":
@@ -250,11 +251,10 @@ function childNodeToStringNoParen(
         "=" +
         childNodeToString(cfg, e.expression, e)
       );
-    default:
-      e satisfies never;
-      throw new Error(
-        `Programming Error: Unexpected Aug node ${(e as any).type}`
-      );
+    default: {
+      const { type } = e satisfies never;
+      throw new Error(`Programming Error: Unexpected Aug node ${type}`);
+    }
   }
 }
 

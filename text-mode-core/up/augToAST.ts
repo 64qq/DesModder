@@ -649,11 +649,12 @@ export function childLatexToAST(e: Aug.Latex.AnyChild): TextAST.Expression {
       };
     case "AssignmentExpression":
       return assignmentExprToAST(e);
-    default:
-      e satisfies never;
+    default: {
+      const { type } = e satisfies never;
       throw new Error(
-        `Programming Error in augToAST: Unexpected Aug node ${(e as any).type}`
+        `Programming Error in augToAST: Unexpected Aug node ${type}`
       );
+    }
   }
 }
 

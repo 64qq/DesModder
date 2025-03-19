@@ -688,11 +688,10 @@ function childNodeToTree(node: AnyNode): Aug.Latex.AnyChild {
       throw new Error(
         `Programming Error: Expected parsenode ${node.type} to not be created`
       );
-    default:
-      node satisfies never;
-      throw new Error(
-        `Programming Error: Unexpected raw node ${(node as any).type}`
-      );
+    default: {
+      const { type } = node satisfies never;
+      throw new Error(`Programming Error: Unexpected raw node ${type}`);
+    }
   }
 }
 

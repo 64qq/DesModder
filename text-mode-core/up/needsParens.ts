@@ -158,11 +158,10 @@ export default function needsParens(path: NodePath): boolean {
       // TODO: don't always need parens
       return true;
     /* istanbul ignore next */
-    default:
-      node satisfies never;
-      throw new Error(
-        `Programming Error: Unexpected Text node ${(node as any).type}`
-      );
+    default: {
+      const { type } = node satisfies never;
+      throw new Error(`Programming Error: Unexpected Text node ${type}`);
+    }
   }
 }
 

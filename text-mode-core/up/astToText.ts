@@ -120,9 +120,10 @@ function astToTextDoc(ctx: EmitContext, path: TextAST.NodePath) {
     case "PrimeExpression":
     case "DerivativeExpression":
       return exprToText(ctx, path as TextAST.NodePath<typeof path.node>);
-    default:
-      path.node satisfies never;
-      throw new Error(`Invalid node: ${(path.node as any)?.type}`);
+    default: {
+      const { type } = path.node satisfies never;
+      throw new Error(`Invalid node: ${type}`);
+    }
   }
 }
 
@@ -591,11 +592,11 @@ function exprToTextNoParen(
         ctx,
         path as NodePath<TextAST.AssignmentExpression>
       );
-    default:
+    default: {
       e satisfies never;
-      throw new Error(
-        `Programming Error: Unexpected AST node ${(e as any).type}`
-      );
+      const { type } = e;
+      throw new Error(`Programming Error: Unexpected AST node ${type}`);
+    }
   }
 }
 
@@ -726,9 +727,10 @@ function startsOrEndsWithWord(dir: 0 | -1) {
         // no children
         return false;
 
-      default:
-        doc satisfies never;
-        throw new Error(`Invalid doc type: ${(doc as any)?.type}.`);
+      default: {
+        const { type } = doc satisfies never;
+        throw new Error(`Invalid doc type: ${type}.`);
+      }
     }
   }
   return fn;
