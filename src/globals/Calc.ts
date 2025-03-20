@@ -274,7 +274,7 @@ interface CalcPrivate {
     getTickerPlaying?: () => boolean;
     // The item models returned are actually much more detailed
     getSelectedItem: () => ItemModel | undefined;
-    getItemModel: (id: any) => ItemModel | undefined;
+    getItemModel: (id: string) => ItemModel | undefined;
     getAllSelectedItems: () => ItemModel[];
     getItemModelByIndex: (index: number) => ItemModel | undefined;
     getAllItemModels: () => ItemModel[];
