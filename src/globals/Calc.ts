@@ -3,6 +3,7 @@ import { GraphState, ItemState, Product } from "../../graph-state";
 import { MathQuillField } from "#components";
 import { Matrix3 } from "./matrix3";
 import type { DispatchedEvent } from "./extra-actions";
+import { Interpolatable } from "#utils/utils.ts";
 
 export type { DispatchedEvent };
 
@@ -357,7 +358,10 @@ interface CalcPrivate {
     isUploadingImages: () => boolean;
     areImagesEnabled: () => boolean;
     scrollSelectedItemIntoView: () => void;
-    s: (identifier: string, placeables?: Record<string, any> | null) => string;
+    s: (
+      identifier: string,
+      placeables?: Record<string, Interpolatable> | null
+    ) => string;
     runAfterDispatch: (cb: () => void) => void;
     getDefaultViewport: () => {
       constructor: { fromObject: (vp: Viewport) => ViewportClass };

@@ -87,3 +87,13 @@ export function isDescendant(elem: HTMLElement | null, target: HTMLElement) {
 // https://stackoverflow.com/questions/48230773/how-to-create-a-partial-like-that-requires-a-single-property-to-be-set
 export type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> &
   U[keyof U];
+
+// `${unknown} gives the following error.`
+//    ^^^^^^^ Type 'unknown' is not assignable to type 'string | number | bigint | boolean | null | undefined'. (2322)
+export type Interpolatable =
+  | string
+  | number
+  | bigint
+  | boolean
+  | null
+  | undefined;
