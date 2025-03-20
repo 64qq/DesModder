@@ -53,7 +53,7 @@ function testRoundTripIdenticalViaAST(raw: string) {
     const aug = parseRootLatex(raw1);
     const ast = rootLatexToAST(aug);
     // don't have id, index, pos, but that doesn't single expr
-    const aug2 = childExprToAug(ast as any as Expression<Concrete>);
+    const aug2 = childExprToAug(ast as Expression<Concrete>);
     const raw2 = latexTreeToString(aug2);
     expect(raw2).toEqual(raw1);
   });

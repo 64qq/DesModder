@@ -137,4 +137,4 @@ declare global {
  * Use `console.log` (lowercase) when you're debugging, to avoid accidental commit
  * Use `/* eslint-disable no-console` and lowercase `console.log` on node scripts
  */
-export const Console = ((globalThis ?? window) as any).console;
+export const Console = globalThis.console;

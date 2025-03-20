@@ -62,7 +62,7 @@ abstract class InputComponent extends ClassComponent<{
 
 /** Switch expects one child which is a function returning a component */
 abstract class SwitchComponent extends ClassComponent<{
-  key: () => any;
+  key: () => unknown;
 }> {}
 
 export interface DCGViewModule {

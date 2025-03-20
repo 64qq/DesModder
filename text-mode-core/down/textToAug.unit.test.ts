@@ -117,7 +117,7 @@ function getTestName(desc: string, s: string) {
   return `${desc} ${JSON.stringify(s).split(/ ?@/)[0]}`;
 }
 
-function testSettings(desc: string, s: string, expected: any) {
+function testSettings(desc: string, s: string, expected: unknown) {
   test(getTestName(desc, s), () => {
     const [{ diagnostics }, res] = textToAug(s);
     expect(diagnostics).toEqual([]);
