@@ -103,8 +103,7 @@ export default class FolderTools extends PluginController {
     const folderModel = this.cc.getItemModelByIndex(folderIndex);
     const folderId = folderModel?.id;
 
-    // type cast beacuse Desmos has not yet updated types for authorFeatures
-    const skipAuthors = !(this.calc.settings as any).authorFeatures;
+    const skipAuthors = !this.calc.settings.authorFeatures;
 
     let newIndex = folderIndex;
     let currIndex = folderIndex;
