@@ -14,11 +14,8 @@ export const configList = [
     type: "boolean",
     key: "hideFolderToggles",
     default: true,
-    shouldShow: (_, dsm): boolean =>
-      // The official API doesn't have `advancedStyling` and `authorFeatures`,
-      // and it would be a hassle to copy over the typing for the extra two fields.
-      (dsm.calc.settings as any).advancedStyling ||
-      (dsm.calc.settings as any).authorFeatures,
+    shouldShow: (_, dsm) =>
+      !!dsm.calc.settings.advancedStyling || !!dsm.calc.settings.authorFeatures,
   },
   {
     type: "boolean",
