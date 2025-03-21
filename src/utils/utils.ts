@@ -95,3 +95,19 @@ export type Interpolatable =
   | boolean
   | null
   | undefined;
+
+type AllKeys<T extends object> = T extends T ? keyof T : never;
+type CommonKeys<T extends object> = keyof T;
+type NonCommonKeys<T extends object> = Exclude<AllKeys<T>, CommonKeys<T>>;
+/**
+ * Takes a union of object types and converts it to a single object type with all possible keys.
+ */
+export type MergeUnion<T extends object> = {
+  [K in CommonKeys<T>]: T[K];
+} & {
+  [K in NonCommonKeys<T>]?: T extends T
+    ? K extends keyof T
+      ? T[K]
+      : never
+    : never;
+};

@@ -1,9 +1,9 @@
-import { DWindow } from "../globals/window";
 import { PluginID } from "../plugins";
 import { GraphState } from "../../graph-state";
 import Intellisense from "#plugins/intellisense/index.tsx";
 import { Browser, Page } from "puppeteer";
-import { Calc as CalcType } from "../globals/Calc";
+import { ItemModel, Calc as CalcType, DWindow } from "#globals";
+import { MergeUnion } from "#utils/utils.ts";
 
 /** Calc is only available inside evaluate() callbacks and friends, since those
  * stringify the function and evaluate it inside the browser */
@@ -115,7 +115,8 @@ export class Driver {
   async assertSelectedItemLatex(latex: string | undefined, msg?: string) {
     const actualLatex = await this.evaluate(
       () =>
-        (Calc.controller.getSelectedItem() as any)?.latex as string | undefined
+        (Calc.controller.getSelectedItem() as MergeUnion<ItemModel> | undefined)
+          ?.latex
     );
     expect(actualLatex, msg).toEqual(latex);
   }
