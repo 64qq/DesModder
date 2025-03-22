@@ -17,7 +17,7 @@ export function PinnedPanel(pe: PinExpressions, listView: ListView) {
         each={() =>
           pe.dsm.textMode?.inTextMode ? [] : (pe.cc?.getAllItemModels?.() ?? [])
         }
-        key={(model) => (model as any).guid}
+        key={(model) => model.guid}
       >
         {(model: any) => (
           <If predicate={() => pe?.isExpressionPinned(model.id)}>

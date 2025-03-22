@@ -26,6 +26,7 @@ interface BasicSetExpression {
 
 interface ItemModelBase {
   id: string;
+  guid: string;
   controller: CalcController;
   index: number;
   renderShell: boolean;
