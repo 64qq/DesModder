@@ -1,34 +1,3 @@
-// "attach" a function onto an existing function, performing some functionality
-// and then optionally triggering the existing function.
-// Returns an "unsubscribe" function that resets the attached function to its prior state
-export function attach<F extends (...args: any) => any>(
-  getTarget: () => F,
-  setTarget: (f: F) => void,
-  handler: (...params: Parameters<F>) => [false, ReturnType<F>] | undefined
-): () => void {
-  const oldTarget = getTarget();
-
-  // @ts-expect-error contravariance
-  setTarget((...args) => {
-    // @ts-expect-error contravariance
-    const ret = handler(...args);
-
-    // intentional
-    if (ret?.[0] === false) return ret[1];
-    return oldTarget(...args);
-  });
-
-  return () => setTarget(oldTarget);
-}
-
-// helper function for attach; makes a getter/setter for an object property
-export function propGetSet<Obj extends object, Key extends keyof Obj>(
-  obj: Obj,
-  key: Key
-) {
-  return [() => obj[key], (v: Obj[Key]) => (obj[key] = v)] as const;
-}
-
 type HookedFunctionCallback<Fn extends (...args: any[]) => any> = (
   stop: (ret: ReturnType<Fn>) => void,
   ...args: Parameters<Fn>
