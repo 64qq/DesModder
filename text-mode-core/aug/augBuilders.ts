@@ -1,4 +1,5 @@
 import Aug from "./AugState";
+import TextAST from "../TextAST";
 
 export function number(x: number): Aug.Latex.Constant {
   return {
@@ -27,10 +28,8 @@ export function binop(
   };
 }
 
-type CompOp = "<" | "<=" | "=" | ">=" | ">";
-
 export function comparator(
-  op: CompOp,
+  op: TextAST.CompareOp,
   left: Aug.Latex.AnyChild,
   right: Aug.Latex.AnyChild
 ): Aug.Latex.Comparator {
