@@ -1,16 +1,15 @@
 import { Fragile } from "#globals";
+import { FunctionType } from "#utils/utils.ts";
 import { createElementWrapped } from "./preload/replaceElement";
 
 export const { DCGView } = Fragile;
 
 export type OrConst<T> = {
-  [K in keyof T]: T[K] extends (...args: any[]) => any
-    ? T[K]
-    : T[K] | (() => T[K]);
+  [K in keyof T]: T[K] extends FunctionType ? T[K] : T[K] | (() => T[K]);
 };
 
 type ToFunc<T> = {
-  [K in keyof T]: T[K] extends (...args: any[]) => any ? T[K] : () => T[K];
+  [K in keyof T]: T[K] extends FunctionType ? T[K] : () => T[K];
 };
 
 export abstract class ClassComponent<
