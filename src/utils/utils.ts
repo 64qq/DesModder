@@ -113,3 +113,6 @@ export type MergeUnion<T extends object> = {
       : never
     : never;
 };
+
+// argument type is contravariant, return type is covariant
+export type FunctionType = (...args: never) => unknown;
