@@ -270,10 +270,12 @@ export type ListAccessExpression<C extends S = Concrete> = Positioned<C> & {
 };
 
 export type CompareOp = "<" | "<=" | ">=" | ">" | "=";
+export type BinaryOp = "^" | "/" | "*" | "cross" | "+" | "-";
+export type RegressionOp = "~";
 
 export type BinaryExpression<C extends S = Concrete> = Positioned<C> & {
   type: "BinaryExpression";
-  op: "~" | "^" | "/" | "*" | "cross" | "+" | "-" | CompareOp;
+  op: RegressionOp | BinaryOp | CompareOp;
   left: Expression<C>;
   right: Expression<C>;
 };

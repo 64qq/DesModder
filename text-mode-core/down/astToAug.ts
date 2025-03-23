@@ -2,6 +2,7 @@ import { ProgramAnalysis } from "../ProgramAnalysis";
 import TextAST from "../TextAST";
 import { Config } from "../TextModeConfig";
 import {
+  BinaryOperator,
   Identifier,
   constant,
   isPiecewiseBoolean,
@@ -691,16 +692,16 @@ export function childExprToAug(
     case "BinaryExpression":
       if (expr.op === "~")
         throw Error("Programming Error: `~` in child BinaryExpression");
-      return binopMap[expr.op] !== undefined
+      return isBinaryOp(expr.op)
         ? {
             type: "BinaryOperator",
-            name: binopMap[expr.op] as any,
+            name: binaryOpMap[expr.op],
             left: childExprToAug(expr.left),
             right: childExprToAug(expr.right),
           }
         : {
             type: "Comparator",
-            operator: expr.op as any,
+            operator: expr.op,
             left: childExprToAug(expr.left),
             right: childExprToAug(expr.right),
           };
@@ -783,14 +784,18 @@ function callExpressionToAug(
   throw Error("Programming Error: Invalid callee");
 }
 
-const binopMap: Record<string, string> = {
+const binaryOpMap = {
   "+": "Add",
   "-": "Subtract",
   "*": "Multiply",
   cross: "CrossMultiply",
   "/": "Divide",
   "^": "Exponent",
-};
+} as const satisfies Record<TextAST.BinaryOp, BinaryOperator["name"]>;
+
+const isBinaryOp = (
+  op: TextAST.BinaryExpression["op"]
+): op is TextAST.BinaryOp => op in binaryOpMap;
 
 function piecewiseToAug(
   branches: TextAST.PiecewiseBranch[]
