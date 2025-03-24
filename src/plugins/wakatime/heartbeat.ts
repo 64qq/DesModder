@@ -70,8 +70,7 @@ export async function sendHeartbeat(
     sendResponse({
       type: "heartbeat-error",
       isAuthError: false,
-      message:
-        typeof e === "object" && e !== null ? ((e as any).message ?? e) : e,
+      message: e instanceof Error ? e.message : String(e),
     });
   }
 }
