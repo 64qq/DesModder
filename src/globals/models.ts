@@ -74,7 +74,7 @@ interface NonfolderItemModelBase extends ItemModelBase {
   dcgView?: ClassComponent;
 }
 
-interface ValueTypeMap {
+export interface ValueTypeMap {
   [ValueType.EmptyList]: [];
   [ValueType.Number]: number;
   [ValueType.ListOfNumber]: number[];
