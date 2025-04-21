@@ -264,7 +264,7 @@ function expressionToAug(
     parametricDomain3Dphi: style.domain?.phi,
     cdf:
       style.cdf &&
-      !exprEvalSameDeep(style.cdf as any, { min: -Infinity, max: Infinity })
+      !exprEvalSameDeep(style.cdf, { min: -Infinity, max: Infinity })
         ? { min: style.cdf.min, max: style.cdf.max }
         : undefined,
     // TODO: vizProps
@@ -543,12 +543,15 @@ function exprEvalSame(expr: Aug.Latex.AnyChild, expected: number) {
   return evaluated === null ? false : evaluated === expected;
 }
 
-function exprEvalSameDeep<T extends Record<string, Aug.Latex.AnyChild>>(
-  exprMap: T,
-  expected: { [K in keyof T]: number }
-) {
-  for (const key in expected)
-    if (!exprEvalSame(exprMap[key], expected[key])) return false;
+function exprEvalSameDeep<
+  K extends string,
+  T extends Partial<Record<K, Aug.Latex.AnyChild>>,
+>(exprMap: T, expected: Record<K, number>) {
+  for (const key in expected) {
+    if (!exprMap[key] || !exprEvalSame(exprMap[key], expected[key])) {
+      return false;
+    }
+  }
   return true;
 }
 
