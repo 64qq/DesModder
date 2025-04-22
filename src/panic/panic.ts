@@ -64,7 +64,7 @@ function addLabelledCheckboxItem(list: Element, plugin: string) {
 
 export const panickedPlugins = new Set<string>();
 function addPanickedPlugin(plugin: string) {
-  if (window.DesModderPreload?.pluginsForceDisabled.has(plugin as any)) {
+  if (window.DesModderPreload?.pluginsForceDisabled.has(plugin as PluginID)) {
     return;
   }
   Console.warn("Panicking for plugin", plugin);
