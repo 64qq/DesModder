@@ -3,14 +3,9 @@ interface ColorType {
   values: number[];
 }
 
-function isEqual(lhs: any[], rhs: any[]) {
+function isEqual<const T extends unknown[]>(lhs: T, rhs: NoInfer<T>) {
   if (lhs.length !== rhs.length) return false;
-  let output = true;
-  for (let i = 0; i < lhs.length; ++i) {
-    output = output && lhs[i] === rhs[i];
-    if (!output) return output;
-  }
-  return output;
+  return lhs.every((val, i) => val === rhs[i]);
 }
 
 const FALLBACK_COLOR = [0.5, 0.5, 0.5, 1];
