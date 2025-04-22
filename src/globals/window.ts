@@ -177,11 +177,14 @@ export const Private = new Proxy(
 
 /* Object.fromEntries based on https://dev.to/svehla/typescript-object-fromentries-389c */
 type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
-type FromEntries<T> = T extends [infer Key, any][]
+type FromEntries<T> = T extends [infer Key, unknown][]
   ? {
-      [K in Key extends string ? Key : string]: Extract<T[number], [K, any]>[1];
+      [K in Key extends string ? Key : string]: Extract<
+        T[number],
+        [K, unknown]
+      >[1];
     }
-  : Record<string, any>;
+  : Record<string, unknown>;
 
 export type FromEntriesWithReadOnly<T> = FromEntries<DeepWriteable<T>>;
 
