@@ -1,5 +1,26 @@
 # DesModder Changelog
 
+## 0.14.5
+
+New features:
+
+- (Better Navigation) Add "Show Scrollbar" toggle when "Scrollable Expressions" is enabled.
+
+Bug fixes:
+
+- Fix broken replacements affecting Code Golf, GLesmos, Text Mode, and other plugins.
+
+Translations:
+
+- Updates to Spanish translations.
+
+## 0.14.4
+
+Bug fixes
+
+- Fix broken replacements that removed the opacity and line width options in some situations.
+- Fix broken replacements affecting GLesmos, Better Evaluation View, and other plugins.
+
 ## 0.14.3
 
 Bug fixes
