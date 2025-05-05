@@ -1,4 +1,4 @@
-import type { Parser } from "src/globals";
+import type { Parser, DWindow, Calc } from "src/globals";
 
 type Parse = Parser["parse"];
 
@@ -11,13 +11,16 @@ export interface PublicConfig {
   parseDesmosLatex?: Parse;
 }
 
-export function buildConfigFromGlobals(Desmos: any, calc: any) {
-  const config = calc.controller.getMathquillConfig({});
+export function buildConfigFromGlobals(
+  desmos: typeof Desmos,
+  calc: Desmos.Calculator
+) {
+  const config = (calc as Calc).controller.getMathquillConfig({});
   return buildConfig({
     operatorNames: config.autoOperatorNames,
     commandNames: config.autoCommands,
-    colors: calc?.colors,
-    parseDesmosLatex: Desmos.Private.Parser.parse,
+    colors: calc.colors,
+    parseDesmosLatex: (desmos as DWindow["Desmos"]).Private.Parser.parse,
   });
 }
 

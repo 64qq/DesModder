@@ -1,5 +1,23 @@
 {
   "extends": "../tsconfig-base",
   "compilerOptions": {},
-  "include": ["**/*"]
+  "include": [
+    // workaround
+    "**/*",
+    "../graph-state",
+    "../metadata",
+    "../parsing",
+    "../text-mode-core",
+    "../loaders",
+    "../src/globals",
+    "../src/components",
+    "../src/core-plugins",
+    "../src/DCGView.ts",
+    "../src/MainController.ts",
+    "../src/panic",
+    "../src/plugins",
+    "../src/preload",
+    "../src/tests",
+    "../src/utils"
+  ]
 }
