@@ -67,7 +67,13 @@ export default class PasteImage extends PluginController {
       this.waitForImageUploads({
         // Callback ID_1 has already been invoked so __nextItemId is incremented
         runAfterSuccess: () => this.setFocusLocation(this.cc.__nextItemId - 1),
-        runFinally: () => this.cc.scrollSelectedItemIntoView(),
+        runFinally: () => {
+          if (this.dsm.textMode?.inTextMode) {
+            // might have to move this process into onCalcEvent
+            this.dsm.textMode.onSetState();
+          }
+          this.cc.scrollSelectedItemIntoView();
+        },
       });
       this.cc.dispatch({
         type: "new-images",
