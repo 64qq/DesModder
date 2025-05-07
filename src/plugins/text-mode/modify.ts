@@ -60,7 +60,8 @@ export function eventSequenceChanges(
     if (
       event.type === "convert-image-to-draggable" ||
       event.type === "create-sliders-for-item" ||
-      event.type === "commit-geo-objects"
+      event.type === "commit-geo-objects" ||
+      event.type === "image-upload-success"
     ) {
       const { changes, effects: effects1 } = newItemsChange(
         analysis,
