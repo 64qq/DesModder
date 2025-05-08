@@ -48,19 +48,29 @@ export default class PasteImage extends PluginController {
           })
         );
       if (!imageFiles) return;
+      const isTextModeEditorActive = this.dsm.textMode?.view?.hasFocus;
       const selectedItem = this.cc.getSelectedItem();
-      // Do nothing when the focused element is not an expression textarea
-      if (!selectedItem && document.activeElement !== document.body) return;
-      if (!selectedItem || selectedItem.isHiddenFromUI) {
-        // Avoid images accidentally going into special folders,
-        // and being inserted at the top of the expression list when there is no selected expression
-        const lastVisibleExpression = this.cc
-          .getAllItemModels()
-          .findLast((model) => !model.isHiddenFromUI);
-        if (lastVisibleExpression) {
-          this.setFocusLocation(lastVisibleExpression.id);
+      if (isTextModeEditorActive) {
+        const stmt = this.dsm.textMode.findLastStatementInListBeforeCursor();
+        if (stmt) {
+          this.setFocusLocation(stmt.id);
         } else {
-          this.cc.dispatch({ type: "new-expression-at-end" });
+          this.cc.dispatch({ type: "new-expression" });
+        }
+      } else {
+        // Do nothing when the focused element is not an expression textarea
+        if (!selectedItem && document.activeElement !== document.body) return;
+        if (!selectedItem || selectedItem.isHiddenFromUI) {
+          // Avoid images accidentally going into special folders,
+          // and being inserted at the top of the expression list when there is no selected expression
+          const lastVisibleExpression = this.cc
+            .getAllItemModels()
+            .findLast((model) => !model.isHiddenFromUI);
+          if (lastVisibleExpression) {
+            this.setFocusLocation(lastVisibleExpression.id);
+          } else {
+            this.cc.dispatch({ type: "new-expression-at-end" });
+          }
         }
       }
       e.preventDefault();
