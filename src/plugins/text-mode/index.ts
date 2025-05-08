@@ -1,4 +1,8 @@
-import { buildConfigFromGlobals, rawToText } from "../../../text-mode-core";
+import {
+  buildConfigFromGlobals,
+  rawToText,
+  TextAST as AST,
+} from "text-mode-core";
 import { DCGView } from "../../DCGView";
 import { Inserter, PluginController } from "../PluginController";
 import { onCalcEvent, analysisStateField, tmPlugin } from "./LanguageServer";
@@ -209,6 +213,18 @@ export default class TextMode extends PluginController {
 
   getTextModeConfig() {
     return buildConfigFromGlobals(Desmos, this.calc);
+  }
+
+  findLastStatementInListBeforeCursor() {
+    if (!this.inTextMode || !this.view) return undefined;
+    const analysis = this.view.state.field(analysisStateField);
+    const cursor = this.view.state.selection.main.head;
+    return analysis.program.children.findLast(
+      (stmt): stmt is Exclude<AST.Statement, AST.Settings | AST.Ticker> =>
+        stmt.type !== "Settings" &&
+        stmt.type !== "Ticker" &&
+        stmt.pos.from <= cursor
+    );
   }
 }
 

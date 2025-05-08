@@ -251,6 +251,12 @@ interface CalcPrivate {
     isNarrow: () => boolean;
     // _removeExpressionSynchronously(model: ItemModel): void;
     handleDispatchedAction: (evt: DispatchedEvent) => void;
+    _toplevelInsertItemAt: (
+      index: number,
+      model: ItemModel,
+      shouldFocus?: boolean,
+      folderId?: string
+    ) => void;
     _toplevelReplaceItemAt: (
       index: number,
       model: ItemModel,
@@ -287,6 +293,7 @@ interface CalcPrivate {
     getDegreeMode: () => boolean;
     getExpressionSearchOpen: () => boolean;
     generateId: () => string;
+    getNextColor: () => string;
     // returns a subscript that occurs nowhere else in the graph
     generateTableXSubscript: () => number;
     updateViews: () => void;
