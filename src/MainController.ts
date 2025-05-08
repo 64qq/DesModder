@@ -30,11 +30,11 @@ export default class DSM extends TransparentPlugins {
 
   constructor(public calc: Calc) {
     super();
-    if ((calc as any)._dsmConnected)
+    if (calc._dsmConnected)
       throw new Error(
         "Cannot bind DesModder controller (DSM) twice to one calc instance."
       );
-    (calc as any)._dsmConnected = true;
+    calc._dsmConnected = true;
     // default values
     this.forceDisabled = window.DesModderPreload!.pluginsForceDisabled;
     if (calc.controller.is3dProduct()) this.forceDisabled.add("GLesmos");

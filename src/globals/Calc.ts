@@ -388,5 +388,9 @@ interface CalcPrivate {
   ) => void;
 }
 
-export type Calc = CalcPrivate & Desmos.Calculator;
+interface DSMCalcInjection {
+  _dsmConnected?: boolean;
+}
+
+export type Calc = CalcPrivate & Desmos.Calculator & DSMCalcInjection;
 export type CalcController = Calc["controller"];
