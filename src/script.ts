@@ -1,17 +1,16 @@
-import { format } from "#i18n";
-import { drawGLesmosSketchToCtx } from "./plugins/GLesmos/drawGLesmosSketchToCtx";
 import DSM from "#DSM";
 import "./fonts/style.css";
-import window, { Calc } from "#globals";
+import { DWindowPreload, DesModderUtils } from "#globals";
 
-const dsm = new DSM((window as any).Calc as Calc);
+declare const window: DWindowPreload;
+
+const dsm = new DSM(window.Calc!);
 
 window.DesModder = {
   controller: dsm,
-  format,
-  drawGLesmosSketchToCtx,
   // Not used by DesModder, but some external scripts may still reference this
   exposedPlugins: dsm.enabledPlugins,
+  ...DesModderUtils,
 };
 window.DSM = dsm;
 

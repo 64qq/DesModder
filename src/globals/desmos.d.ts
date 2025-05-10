@@ -5,6 +5,7 @@ declare global {
       advancedStyling?: boolean;
       authorFeatures?: boolean;
     }
+    const Calculator: typeof GraphingCalculator;
   }
 }
 export {};

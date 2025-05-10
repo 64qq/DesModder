@@ -1,4 +1,4 @@
-import { Console } from "../../globals/window";
+import { Console, DWindowPreload } from "../../globals/window";
 import { addPanic, panickedPlugins } from "../../panic/panic";
 import workerAppend from "./append.inline";
 import { ReplacementResult, applyReplacements } from "./applyReplacement";
@@ -8,6 +8,8 @@ import jsTokens from "js-tokens";
 
 const CACHE_STORE = "replacement_store";
 const CACHE_KEY = "replacement_cached";
+
+declare const window: DWindowPreload;
 
 // We used to use idb-keyval, which forced a particular db name and schema.
 // Deleting it saves about 7MB of disk.
@@ -27,7 +29,7 @@ export async function fullReplacementCached(
   enabledReplacements: Block[]
 ): Promise<string> {
   void deleteOldDB();
-  (window as any).dsm_workerAppend = workerAppend;
+  window.dsm_workerAppend = workerAppend;
   const db = await openDB("cached-replacement-store", 1, {
     upgrade(db) {
       db.createObjectStore(CACHE_STORE);
