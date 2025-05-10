@@ -1,3 +1,4 @@
+import { Model } from "#globals";
 import { Fragile } from "../../globals/window";
 import { Inserter, PluginController, Replacer } from "../PluginController";
 import { ErrorTriangle } from "./components/ErrorTriangle";
@@ -68,7 +69,7 @@ export default class HideErrors extends PluginController {
     return this.dsm.metadata?.getDsmItemModel(id)?.errorHidden;
   }
 
-  hideButton(getModel: () => any): Inserter {
+  hideButton(getModel: () => Model): Inserter {
     return () => HideButton(this, getModel);
   }
 

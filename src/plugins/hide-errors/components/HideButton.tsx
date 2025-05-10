@@ -2,8 +2,9 @@ import HideErrors from "..";
 import { jsx } from "#DCGView";
 import { If } from "#components";
 import { format } from "#i18n";
+import { Model } from "#globals";
 
-export function HideButton(hideErrors: HideErrors, getModel: () => any) {
+export function HideButton(hideErrors: HideErrors, getModel: () => Model) {
   return (
     <If predicate={() => getModel().type !== "ticker"}>
       {() => (
