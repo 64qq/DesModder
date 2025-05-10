@@ -300,13 +300,7 @@ interface CalcPrivate {
       notifyWhenSynced: (cb: () => void) => void;
     };
     listModel: {
-      // add properties as needed
-      __itemModelArray: {
-        id: string;
-        colorLatex: string;
-        folderId: string;
-        type: "folder" | "expression";
-      }[];
+      __itemModelArray: ItemModel[];
       __itemIdToModel: Record<string, ItemModel>;
 
       drawLayers: { layer: number; drawOrder: string[]; drawSet: string[] }[];
