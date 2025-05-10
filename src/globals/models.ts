@@ -24,14 +24,17 @@ interface BasicSetExpression {
   dragMode?: "X" | "Y" | "XY" | "NONE" | "AUTO";
 }
 
-interface ItemModelBase {
+interface ModelBase {
   id: string;
   guid: string;
+  filteredBySearch?: boolean;
+}
+
+interface ItemModelBase extends ModelBase {
   controller: CalcController;
   index: number;
   renderShell: boolean;
   isHiddenFromUI: boolean;
-  filteredBySearch?: boolean;
   readonly?: boolean;
   dsmGolfStats?: GolfStats;
   dsmEnableGolfDespiteLength?: boolean;
@@ -213,9 +216,21 @@ export interface FolderModel extends ItemModelBase {
   error?: any;
 }
 
+export interface TickerModel extends ModelBase {
+  type: "ticker";
+  handlerLatex: string;
+  minStepLatex: string;
+  open: boolean;
+  playing: boolean;
+  avgDelta: number;
+  lastTickTime?: number;
+}
+
 export type ItemModel =
   | ExpressionModel
   | TableModel
   | TextModel
   | ImageModel
   | FolderModel;
+
+export type Model = ItemModel | TickerModel;
