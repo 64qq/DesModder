@@ -177,8 +177,16 @@ interface Fragile {
     isHelp: (e: KeyboardEvent) => boolean;
   };
   List: {
-    removeItemById: (listModel: any, id: string) => void;
-    moveItemsTo: (listModel: any, from: number, to: number, n: number) => void;
+    removeItemById: (
+      listModel: CalcController["listModel"],
+      id: string
+    ) => void;
+    moveItemsTo: (
+      listModel: CalcController["listModel"],
+      from: number,
+      to: number,
+      n: number
+    ) => void;
   };
   currentLanguage: () => string;
 }
