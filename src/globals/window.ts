@@ -16,9 +16,27 @@ import {
 import { GenericSettings, PluginID } from "../plugins";
 import { ItemModel } from "./models";
 import { GraphState } from "../../graph-state";
+import { Calc, CalcController } from "./Calc";
+import { format } from "#i18n";
+import { drawGLesmosSketchToCtx } from "../plugins/GLesmos/drawGLesmosSketchToCtx";
+import { insertElement, replaceElement } from "../preload/replaceElement";
+import { MergeUnion } from "#utils/utils.ts";
+
+export const DesModderUtils = {
+  format,
+  drawGLesmosSketchToCtx,
+} as const;
+
+export const DSMInit = {
+  insertElement,
+  replaceElement,
+} as const;
 
 export interface DWindow extends Window {
-  DesModder: any;
+  DesModder: {
+    controller: DSM;
+    exposedPlugins: DSM["enabledPlugins"];
+  } & typeof DesModderUtils;
   DSM: DSM;
   DesModderPreload?: {
     pluginsForceDisabled: Set<PluginID>;
@@ -31,6 +49,19 @@ export interface DWindow extends Window {
   };
   Desmos: Desmos;
 }
+
+export type DWindowPreload = Window & {
+  /**
+   * Don't use Calc directly, unless you're doing global setup for
+   * the whole extension. Reference a specific `calc` object instead.
+   */
+  Calc?: Calc;
+  /**
+   * @see
+   * [esbuild-plugin-inline]({@link ../../loaders/esbuild-plugin-inline.mjs})
+   */
+  dsm_workerAppend?: string;
+} & MergeUnion<Partial<DWindow> | { DSM: typeof DSMInit }>;
 
 type DesmosPublic = typeof Desmos;
 interface Desmos extends DesmosPublic {

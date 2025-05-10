@@ -1,4 +1,4 @@
-import window, { Console } from "#globals";
+import { Console, DWindowPreload } from "#globals";
 import injectScript from "#utils/injectScript.ts";
 import {
   postMessageUp,
@@ -11,6 +11,8 @@ import moduleReplacements from "./moduleReplacements";
 import { insertElement, replaceElement } from "./replaceElement";
 import { fullReplacementCached } from "./replacementHelpers/cacheReplacement";
 
+declare const window: DWindowPreload;
+
 /* This script is loaded at document_start, before the page's scripts */
 
 /** The calculator is not loaded as soon as shared_calculator_desktop is
@@ -18,7 +20,7 @@ import { fullReplacementCached } from "./replacementHelpers/cacheReplacement";
  * returns before actually initializing the calculator. This leads to a race
  * condition, so poll for Calc being ready. */
 function tryRunDesModder() {
-  if ((window as any).Calc !== undefined) runDesModder();
+  if (window.Calc !== undefined) runDesModder();
   else setTimeout(tryRunDesModder, 10);
 }
 
@@ -40,14 +42,14 @@ function getCalcDesktopURL() {
 async function load(pluginsForceDisabled: Set<string>) {
   if (window.location.pathname === "/geometry-legacy") return;
 
-  if ((window as any).Desmodder) {
+  if (window.DesModder) {
     throw new Error(
       "DesModder is already loaded in the tab, probably due to an update in Firefox. " +
         "Stopping the loading process for DesModder."
     );
   }
 
-  if ((window.Desmos as any)?.Calculator || (window as any).Calc) {
+  if (window.Desmos?.Calculator ?? window.Calc) {
     throw new Error(
       "DesModder failed to load properly; it was unable to block the initial load of Desmos. " +
         "Stopping the loading process for DesModder."
@@ -80,7 +82,7 @@ async function load(pluginsForceDisabled: Set<string>) {
   tryRunDesModder();
   // eslint-disable-next-line no-eval
   (0, eval)(newCode);
-  delete (window as any).dsm_workerAppend;
+  delete window.dsm_workerAppend;
 }
 
 listenToMessageDown((message) => {
@@ -98,7 +100,7 @@ listenToMessageDown((message) => {
     window.DSM = {
       insertElement,
       replaceElement,
-    } as any;
+    };
     void load(arrayToSet(message.pluginsForceDisabled));
     // cancel listener
     return true;
