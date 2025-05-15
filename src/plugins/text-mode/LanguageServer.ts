@@ -34,8 +34,7 @@ export function onCalcEvent(view: EditorView, event: DispatchedEvent) {
     view.dispatch(transaction);
     return;
   }
-  let { changes, effects } = eventSequenceChanges(view, event, analysis);
-  effects ??= [];
+  const { changes, effects = [] } = eventSequenceChanges(view, event, analysis);
   if (
     changes.length === 0 &&
     effects.length === 0 &&
