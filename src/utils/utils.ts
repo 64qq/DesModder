@@ -107,14 +107,26 @@ type NonCommonKeys<T extends object> = Exclude<AllKeys<T>, CommonKeys<T>>;
 export type MergeObjectUnion<T extends object> = Prettify<
   [T] extends [never]
     ? never
-    : Pick<T, CommonKeys<T>> & {
-        [K in NonCommonKeys<T>]?: T extends T
-          ? K extends keyof T
-            ? T[K]
-            : never
-          : never;
-      }
+    : Pick<T, CommonKeys<T>> &
+        SetReadonly<
+          {
+            [K in NonCommonKeys<T>]?: T extends T
+              ? K extends keyof T
+                ? T[K]
+                : never
+              : never;
+          },
+          ExtractReadonlyKeys<T, NonCommonKeys<T>>
+        >
 >;
+
+type ExtractReadonlyKeys<T extends object, K> = T extends T
+  ? K extends keyof T
+    ? IsReadonly<T, K> extends true
+      ? K
+      : never
+    : never
+  : never;
 
 type PartitionByAssignability<T, U> = T extends U
   ? { assignable: T; unassignable: never }
@@ -148,3 +160,18 @@ export type Prettify<T> = unknown extends T
   : T extends FunctionType
     ? T
     : { [K in keyof T]: T[K] };
+
+// https://github.com/type-challenges/type-challenges/blob/b1baef1ccdb721256f14d105bb9ac7928b5ecfb7/utils/index.d.ts
+type IsEqual<X, Y> =
+  (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2
+    ? true
+    : false;
+
+type SetReadonly<T extends object, K extends keyof T> = T extends T
+  ? Prettify<Omit<T, K> & Readonly<Pick<T, K>>>
+  : never;
+
+type IsReadonly<T extends object, K extends keyof T> = IsEqual<
+  Pick<T, K>,
+  Readonly<Pick<T, K>>
+>;
