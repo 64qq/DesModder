@@ -101,16 +101,50 @@ type CommonKeys<T extends object> = keyof T;
 type NonCommonKeys<T extends object> = Exclude<AllKeys<T>, CommonKeys<T>>;
 /**
  * Takes a union of object types and converts it to a single object type with all possible keys.
+ *
+ * Use only if you are sure that T has no extra properties.
  */
-export type MergeUnion<T extends object> = {
-  [K in CommonKeys<T>]: T[K];
-} & {
-  [K in NonCommonKeys<T>]?: T extends T
-    ? K extends keyof T
-      ? T[K]
-      : never
+export type MergeObjectUnion<T extends object> = Prettify<
+  [T] extends [never]
+    ? never
+    : Pick<T, CommonKeys<T>> & {
+        [K in NonCommonKeys<T>]?: T extends T
+          ? K extends keyof T
+            ? T[K]
+            : never
+          : never;
+      }
+>;
+
+type PartitionByAssignability<T, U> = T extends U
+  ? { assignable: T; unassignable: never }
+  : { assignable: never; unassignable: T };
+/**
+ * Takes a union and converts object types in it to a single object type with all possible keys,
+ * leaving the other types intact.
+ *
+ * Use only if you are sure that T has no extra properties.
+ */
+export type MergeUnion<T> =
+  PartitionByAssignability<
+    T extends object
+      ? T extends unknown[] | FunctionType
+        ? [false, T]
+        : [true, T]
+      : [false, T],
+    [true, object]
+  > extends infer P extends {
+    assignable: [true, object];
+    unassignable: [false, unknown];
+  }
+    ? P["unassignable"][1] | MergeObjectUnion<P["assignable"][1]>
     : never;
-};
 
 // argument type is contravariant, return type is covariant
 export type FunctionType = (...args: never) => unknown;
+
+export type Prettify<T> = unknown extends T
+  ? T
+  : T extends FunctionType
+    ? T
+    : { [K in keyof T]: T[K] };
