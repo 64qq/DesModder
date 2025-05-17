@@ -120,7 +120,7 @@ export class Driver {
   async assertSelectedItemLatex(latex: string | undefined, msg?: string) {
     const actualLatex = await this.evaluate(
       () =>
-        (Calc.controller.getSelectedItem() as MergeUnion<ItemModel> | undefined)
+        (Calc.controller.getSelectedItem() as MergeUnion<ItemModel | undefined>)
           ?.latex
     );
     expect(actualLatex, msg).toEqual(latex);
