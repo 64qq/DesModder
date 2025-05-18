@@ -10,11 +10,11 @@ export function isArray(doc: Doc): doc is Doc[] {
   return Array.isArray(doc);
 }
 
-export function isType<T extends DocCommand["type"]>(
+export function isType<T extends DT>(
   doc: Doc,
   type: T
-): doc is DocCommand & { type: T } {
-  return !!doc && (doc as any).type === type;
+): doc is Extract<DocCommand, { type: T }> {
+  return typeof doc !== "string" && !isArray(doc) && doc.type === type;
 }
 
 // Using a unique object to compare by reference.
