@@ -20,7 +20,7 @@ import { Calc, CalcController } from "./Calc";
 import { format } from "#i18n";
 import { drawGLesmosSketchToCtx } from "../plugins/GLesmos/drawGLesmosSketchToCtx";
 import { insertElement, replaceElement } from "../preload/replaceElement";
-import { MergeUnion } from "#utils/utils.ts";
+import { Concrete, MergeUnion } from "#utils/utils.ts";
 
 export const DesModderUtils = {
   format,
@@ -44,8 +44,8 @@ export interface DWindow extends Window {
     pluginSettings: Record<PluginID, GenericSettings | undefined>;
   };
   DesModderFragile: {
-    ExpressionView: ExpressionViewComponent;
-    ImageIconView: typeof IconViewComponent;
+    ExpressionView: Concrete<typeof ExpressionViewComponent>;
+    ImageIconView: Concrete<typeof IconViewComponent>;
   };
   Desmos: Desmos;
 }
