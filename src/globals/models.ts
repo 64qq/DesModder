@@ -39,6 +39,12 @@ interface ItemModelBase extends ModelBase {
   dsmGolfStats?: GolfStats;
   dsmEnableGolfDespiteLength?: boolean;
   rootViewNode: HTMLElement;
+  error?:
+    | string
+    | number
+    | null
+    | undefined
+    | { key: string; vars: Record<string, unknown> };
 }
 
 export enum ValueType {
@@ -72,7 +78,6 @@ interface FormulaBase {
 interface NonfolderItemModelBase extends ItemModelBase {
   folderId?: string;
   secret?: boolean;
-  error?: any;
   formula?: FormulaBase;
   dcgView?: ClassComponent;
 }
@@ -213,7 +218,6 @@ export interface FolderModel extends ItemModelBase {
   folderId?: undefined;
   title?: string;
   secret?: boolean;
-  error?: any;
 }
 
 export interface TickerModel extends ModelBase {
