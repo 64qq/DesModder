@@ -9,3 +9,7 @@ export interface Expression {
   glesmos?: boolean;
   glesmosLinesConfirmed?: boolean;
 }
+
+export interface MetadataV1 {
+  pinnedExpressions?: string[];
+}
