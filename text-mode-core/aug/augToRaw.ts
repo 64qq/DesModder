@@ -142,7 +142,7 @@ function augNonFolderToRaw(
         ),
         regressionParameters: Object.fromEntries(
           [...(item.regression?.regressionParameters.entries() ?? [])].map(
-            ([k, v]) => [latexTreeToString(cfg, k), v]
+            ([k, v]) => [latexTreeToString(cfg, k), v] as const
           )
         ),
         isLogModeRegression: item.regression?.isLogMode,
