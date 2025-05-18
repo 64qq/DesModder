@@ -217,15 +217,12 @@ export class FooterView extends Component<ModelAndController> {
 function exprTemplate(
   self: InstanceType<typeof Component<ModelAndController>>
 ) {
-  const n = new (ExpressionView as any)(
-    {
-      model: () => self.props.model(),
-      controller: () => self.props.controller(),
-      onDragPending: () => {},
-      isDragCopy: () => false,
-    },
-    []
-  );
+  const n = new ExpressionView({
+    model: () => self.props.model(),
+    controller: () => self.props.controller(),
+    onDragPending: () => {},
+    isDragCopy: () => false,
+  });
   n.init();
   return n.template();
 }

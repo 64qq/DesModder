@@ -154,6 +154,8 @@ export type MergeUnion<T> =
 
 // argument type is contravariant, return type is covariant
 export type FunctionType = (...args: never) => unknown;
+export type ConstructorType = new (...args: never) => unknown;
+export type AbstractConstructorType = abstract new (...args: never) => unknown;
 
 export type Prettify<T> = unknown extends T
   ? T
@@ -175,3 +177,7 @@ type IsReadonly<T extends object, K extends keyof T> = IsEqual<
   Pick<T, K>,
   Readonly<Pick<T, K>>
 >;
+
+export type Concrete<C extends AbstractConstructorType> = new (
+  ...args: ConstructorParameters<C>
+) => InstanceType<C>;
