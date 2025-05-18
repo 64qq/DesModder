@@ -1,3 +1,5 @@
+// TODO: GraphState version 10 or later
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { clean, testWithPage } from "#tests";
 
 const STATE_FOLDER = {
