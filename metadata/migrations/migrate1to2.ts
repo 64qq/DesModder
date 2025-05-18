@@ -1,8 +1,4 @@
-import Metadata from "../interface";
-
-interface MetadataV1 {
-  pinnedExpressions?: string[];
-}
+import Metadata, { MetadataV1 } from "../interface";
 
 export default function migrate1to2(state: MetadataV1): Metadata {
   const stateOut: Metadata = {
