@@ -84,6 +84,6 @@ function drawOneGLesmosSketchToCtx(
     }
   } catch (e) {
     const model = cc.getItemModel(id);
-    if (model) model.error = e instanceof Error ? e.message : e;
+    if (model) model.error = e instanceof Error ? e.message : String(e);
   }
 }
