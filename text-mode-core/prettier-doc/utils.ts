@@ -17,27 +17,36 @@ export function isType<T extends DT>(
   return typeof doc !== "string" && !isArray(doc) && doc.type === type;
 }
 
-// Using a unique object to compare by reference.
-const traverseDocOnExitStackMarker = {} as any as Doc;
-
+type DocStackEntry =
+  | {
+      type: "doc";
+      doc: Doc;
+    }
+  | {
+      type: "docOnExit";
+      doc: Doc;
+    };
 function traverseDoc(
   doc: Doc,
   onEnter?: (doc: Doc) => undefined | boolean,
   onExit?: (doc: Doc) => void,
   shouldTraverseConditionalGroups?: boolean
 ) {
-  const docsStack = [doc];
-
+  const docsStack: DocStackEntry[] = [];
+  const pushDocs = (...docs: Doc[]) => {
+    docsStack.push(...docs.map((d) => ({ type: "doc", doc: d }) as const));
+  };
+  pushDocs(doc);
   while (docsStack.length > 0) {
-    const doc = docsStack.pop()!;
+    const { type, doc } = docsStack.pop()!;
 
-    if (doc === traverseDocOnExitStackMarker) {
-      onExit?.(docsStack.pop()!);
+    if (type === "docOnExit") {
+      onExit?.(doc);
       continue;
     }
 
     if (onExit) {
-      docsStack.push(doc, traverseDocOnExitStackMarker);
+      docsStack.push({ type: "docOnExit", doc });
     }
 
     if (onEnter?.(doc) === false) {
@@ -55,22 +64,22 @@ function traverseDoc(
     if (isArray(doc) || isType(doc, DT.Fill)) {
       const parts = isArray(doc) ? doc : doc.parts;
       for (let ic = parts.length, i = ic - 1; i >= 0; --i) {
-        docsStack.push(parts[i]);
+        pushDocs(parts[i]);
       }
       continue;
     }
 
     switch (doc.type) {
       case DT.IfBreak:
-        docsStack.push(doc.flatContents, doc.breakContents);
+        pushDocs(doc.flatContents, doc.breakContents);
         break;
       case DT.Group:
         if (shouldTraverseConditionalGroups && doc.expandedStates) {
           for (let ic = doc.expandedStates.length, i = ic - 1; i >= 0; --i) {
-            docsStack.push(doc.expandedStates[i]);
+            pushDocs(doc.expandedStates[i]);
           }
         } else {
-          docsStack.push(doc.contents);
+          pushDocs(doc.contents);
         }
         break;
       case DT.Align:
@@ -78,7 +87,7 @@ function traverseDoc(
       case DT.IndentIfBreak:
       case DT.Label:
       case DT.LineSuffix:
-        docsStack.push(doc.contents);
+        pushDocs(doc.contents);
         break;
       case DT.Cursor:
       case DT.Trim:
