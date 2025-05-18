@@ -228,7 +228,7 @@ export function propagateBreaks(doc: Doc) {
     }
   }
   function propagateBreaksOnExitFn(doc: Doc) {
-    if ((doc as DocCommand).type === DT.Group) {
+    if (isType(doc, DT.Group)) {
       const group = groupStack.pop()!;
       if (group.break) {
         breakParentGroup(groupStack);
