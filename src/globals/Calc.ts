@@ -378,6 +378,7 @@ interface CalcPrivate {
     opts?: {
       allowUndo?: boolean;
       remapColors?: boolean;
+      fromTextMode?: boolean;
     }
   ) => void;
 }

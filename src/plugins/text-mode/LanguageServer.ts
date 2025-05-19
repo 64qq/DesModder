@@ -128,7 +128,7 @@ function setCalcState(tm: TextMode, state: GraphState) {
   const oldBlur = ae?.blur.bind(ae);
   if (ae) ae.blur = () => {};
   state.graph.product = tm.cc.graphSettings.config.product;
-  tm.calc.setState(state, { allowUndo: true, fromTextMode: true } as any);
+  tm.calc.setState(state, { allowUndo: true, fromTextMode: true });
   if (ae) ae.blur = oldBlur!;
 }
 
