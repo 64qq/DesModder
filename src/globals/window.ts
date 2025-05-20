@@ -12,6 +12,7 @@ import {
   SegmentedControlComponent,
   TooltipComponent,
   MathQuillConfig,
+  PromptSliderViewComponent,
 } from "../components/desmosComponents";
 import { GenericSettings, PluginID } from "../plugins";
 import { ItemModel } from "./models";
@@ -152,7 +153,7 @@ export default window;
 
 interface Fragile {
   DCGView: DCGViewModule;
-  PromptSliderView: any;
+  PromptSliderView: typeof PromptSliderViewComponent;
   Checkbox: typeof CheckboxComponent;
   SegmentedControl: typeof SegmentedControlComponent;
   MathquillView: typeof MathQuillViewComponent & {
