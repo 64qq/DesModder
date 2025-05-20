@@ -226,3 +226,14 @@ function exprTemplate(
   n.init();
   return n.template();
 }
+
+export abstract class PromptSliderViewComponent extends ClassComponent<
+  ModelAndController & {
+    missingVariables?: string[];
+    restoreFocusLocation?: () => void;
+  }
+> {
+  abstract promptGroupId: `prompt-slider-${string}`;
+  abstract getMissingBaseCases(): string[];
+  abstract getMissingVariables(): string[];
+}

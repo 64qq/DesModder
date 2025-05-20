@@ -14,6 +14,7 @@ function initPromptSlider() {
   // getMissingVariables is used in different ways, but we care about
   //    t.getMissingVariables().slice(0, 4)
   const proto = Fragile.PromptSliderView?.prototype;
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const oldGMV = proto.getMissingVariables;
   proto.getMissingVariables = function () {
     const missing = oldGMV.call(this);
