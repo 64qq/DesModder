@@ -234,8 +234,6 @@ export class IntellisenseState {
         }
 
         mapAugAST(ltx, (node) => {
-          if (!node) return;
-
           // add referenced identifier
           if (node.type === "Identifier") {
             this.addIdentifierReference(node.symbol, expression.id);

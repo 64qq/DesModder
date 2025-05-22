@@ -2,30 +2,27 @@ import { ExpressionAug } from "../../../text-mode-core";
 import { latexStringToIdentifierString } from "./view";
 import { MQCursor, MathQuillField } from "#components";
 
-export function mapAugAST(
-  node: ExpressionAug["latex"],
-  callback: (node: ExpressionAug["latex"]) => void
-) {
-  function map(x: any) {
-    if (Array.isArray(x)) {
-      for (const child of x) {
-        map(child);
-      }
-      return;
+type Latex = Required<ExpressionAug>["latex"];
+type ObjectValue<T> = T extends T ? T[keyof T] : never;
+// capture T before union distribution
+type LatexNode<T = Latex, Seen = never, TUnion = T> = T extends Seen
+  ? T
+  : T extends object
+    ? T extends unknown[]
+      ? T | LatexNode<T[number], Seen | TUnion>
+      : T | LatexNode<ObjectValue<T>, Seen | TUnion>
+    : T;
+
+export function mapAugAST(latex: Latex, callback: (node: Latex) => void) {
+  (function map(node: LatexNode) {
+    if (typeof node !== "object") return;
+    if (Array.isArray(node)) {
+      node.forEach(map);
+    } else if ("type" in node) {
+      callback(node);
+      (Object.values(node) as ObjectValue<typeof node>[]).forEach(map);
     }
-
-    if (typeof x === "object") {
-      if (typeof x.type === "string") {
-        callback(x);
-
-        for (const [_, v] of Object.entries(x)) {
-          map(v);
-        }
-      }
-    }
-  }
-
-  map(node);
+  })(latex);
 }
 
 export function getController(mq: MathQuillField) {
