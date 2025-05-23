@@ -6,8 +6,6 @@ export default class InlineMathInputView extends Component<
   Omit<ConstructorParameters<typeof InlineMathInputViewGeneral>[0], "readonly">
 > {
   template() {
-    return (
-      <InlineMathInputViewGeneral {...(this.props as any)} readonly={false} />
-    );
+    return <InlineMathInputViewGeneral {...this.props} readonly={false} />;
   }
 }
