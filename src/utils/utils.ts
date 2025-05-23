@@ -127,8 +127,7 @@ type ExtractReadonlyKeys<T extends object, K> = T extends T
       : never
     : never
   : never;
-
-type PartitionByAssignability<T, U> = T extends U
+export type PartitionByAssignability<T, U> = T extends U
   ? { assignable: T; unassignable: never }
   : { assignable: never; unassignable: T };
 /**

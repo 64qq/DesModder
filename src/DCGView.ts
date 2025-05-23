@@ -1,15 +1,27 @@
 import { Fragile } from "#globals";
-import { FunctionType } from "#utils/utils.ts";
+import { FunctionType, PartitionByAssignability } from "#utils/utils.ts";
 import { createElementWrapped } from "./preload/replaceElement";
 
 export const { DCGView } = Fragile;
 
+type PropToFunc<T> = [T] extends [never]
+  ? never
+  : PartitionByAssignability<T, FunctionType> extends {
+        assignable: infer Assignable;
+        unassignable: infer Unassignable;
+      }
+    ? // Merges the return types of ToFunc'd union constituents while preserving those that are already functions.
+      // `type PropToFunc<T> = T extends FunctionType ? T : () => T` causes assignability issues;
+      // e.g. `(() => true) | (() => false)` is a subtype of `() => boolean`, but not vice versa (consider a function that randomly returns true or false).
+      Assignable | ([Unassignable] extends [never] ? never : () => Unassignable)
+    : never;
+
 export type OrConst<T> = {
-  [K in keyof T]: T[K] extends FunctionType ? T[K] : T[K] | (() => T[K]);
+  [K in keyof T]: T[K] | PropToFunc<T[K]>;
 };
 
 type ToFunc<T> = {
-  [K in keyof T]: T[K] extends FunctionType ? T[K] : () => T[K];
+  [K in keyof T]: PropToFunc<T[K]>;
 };
 
 export abstract class ClassComponent<

@@ -4,7 +4,7 @@ import { For } from "#components";
 export class IndexFor<T> extends Component<{
   each: () => T[];
   key: (t: T) => string | number;
-  children?: any;
+  children?: (t: T, index: () => number) => any;
 }> {
   template() {
     const indexCache = new Map<string | number, number>();
@@ -20,7 +20,7 @@ export class IndexFor<T> extends Component<{
         }}
         key={([e]) => this.props.key(e)}
       >
-        {([e, index]: [T, () => number]) => this.props?.children(e, index)}
+        {([e, index]: [T, () => number]) => this.props?.children?.(e, index)}
       </For>
     );
   }
