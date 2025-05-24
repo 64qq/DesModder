@@ -14,7 +14,8 @@ import {
   MathQuillConfig,
   PromptSliderViewComponent,
 } from "../components/desmosComponents";
-import { GenericSettings, PluginID } from "../plugins";
+import { PluginID } from "../plugins";
+import { GenericSettings } from "../plugins/config";
 import { ItemModel } from "./models";
 import { GraphState } from "../../graph-state";
 import { Calc, CalcController } from "./Calc";
