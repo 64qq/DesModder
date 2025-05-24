@@ -28,6 +28,7 @@ const DEFAULT_FILENAME = "DesModder_Video_Creator";
 export default class VideoCreator extends PluginController {
   static id = "video-creator" as const;
   static enabledByDefault = true;
+  static config = undefined;
 
   ffmpegLoaded = false;
   frames: string[] = [];

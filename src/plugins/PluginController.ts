@@ -6,7 +6,7 @@ export class PluginController<
 > {
   static descriptionLearnMore?: string = undefined;
   static forceEnabled?: boolean = undefined;
-  static config: readonly ConfigItem[] | undefined = undefined;
+  static config: readonly ConfigItem[] | undefined;
   /** Core plugins get enabled before all others and can't be disabled. */
   static isCore = false;
   calc = this.dsm.calc;

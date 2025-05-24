@@ -6,6 +6,7 @@ import { Console } from "#globals";
 export default class FindReplace extends PluginController {
   static id = "find-and-replace" as const;
   static enabledByDefault = true;
+  static config = undefined;
   dispatchListenerID: string | undefined;
   replaceLatex = "";
   view = new View();

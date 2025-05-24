@@ -6,6 +6,7 @@ import "./glesmos.less";
 export default class GLesmos extends PluginController {
   static id = "GLesmos" as const;
   static enabledByDefault = false;
+  static config = undefined;
 
   afterEnable() {
     this.checkGLesmos();
