@@ -12,14 +12,16 @@ import {
 } from "#components";
 import { format } from "#i18n";
 import {
-  ConfigItem,
-  ConfigItemString,
-  GenericSettings,
   SpecificPlugin,
   PluginID,
   plugins,
-  ConfigItemNumber,
 } from "#plugins/index.ts";
+import {
+  ConfigItem,
+  ConfigItemString,
+  GenericSettings,
+  ConfigItemNumber,
+} from "#plugins/config.ts";
 import PillboxMenus from "..";
 import "./Menu.less";
 declare const VERSION: string;

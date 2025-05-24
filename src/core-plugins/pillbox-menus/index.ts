@@ -3,7 +3,8 @@ import { MenuFunc } from "./components/Menu";
 import PillboxContainer from "./components/PillboxContainer";
 import PillboxMenu from "./components/PillboxMenu";
 import { DCGView } from "#DCGView";
-import { plugins, PluginID, ConfigItem } from "#plugins/index.ts";
+import { plugins, PluginID } from "#plugins/index.ts";
+import { ConfigItem } from "#plugins/config.ts";
 import { createElementWrapped } from "../../preload/replaceElement";
 
 export default class PillboxMenus extends PluginController<undefined> {

@@ -4,11 +4,11 @@ import {
   plugins,
   pluginList,
   PluginID,
-  GenericSettings,
   TransparentPlugins,
   IDToPluginSettings,
   PluginInstance,
 } from "./plugins";
+import { GenericSettings } from "./plugins/config";
 import { postMessageUp, mapToRecord, recordToMap } from "#utils/messages.ts";
 
 export default class DSM extends TransparentPlugins {
