@@ -1,71 +1,57 @@
-import { ConfigItem } from "#plugins/config.ts";
+import { defineConfig } from "#plugins/config.ts";
 
-export const configList = [
-  {
-    key: "superscriptOperators",
+export const configList = defineConfig<Config>()({
+  superscriptOperators: {
     type: "boolean",
     default: false,
   },
-  {
-    key: "commaDelimiter",
+  commaDelimiter: {
     type: "boolean",
     default: false,
   },
-  {
-    key: "delimiterOverride",
+  delimiterOverride: {
     type: "string",
     variant: "text",
     default: ",",
-    shouldShow(current) {
-      return current.commaDelimiter;
-    },
+    shouldShow: (current) => current.commaDelimiter,
   },
-  {
-    key: "extendedGreek",
+  extendedGreek: {
     type: "boolean",
     default: false,
   },
-  {
-    key: "subscriptReplacements",
+  subscriptReplacements: {
     type: "boolean",
     default: false,
   },
-  {
-    key: "noAutoSubscript",
+  noAutoSubscript: {
     type: "boolean",
     default: false,
   },
-  {
-    key: "noNEquals",
+  noNEquals: {
     type: "boolean",
     default: false,
   },
-  {
-    key: "leftIntoSubscript",
+  leftIntoSubscript: {
     type: "boolean",
     default: false,
   },
-  {
-    key: "subSupWithoutOp",
+  subSupWithoutOp: {
     type: "boolean",
     default: false,
   },
-  {
-    key: "allowMixedBrackets",
+  allowMixedBrackets: {
     type: "boolean",
     default: false,
   },
-  {
-    key: "noPercentOf",
+  noPercentOf: {
     type: "boolean",
     default: false,
   },
-  {
-    key: "lessFSpacing",
+  lessFSpacing: {
     type: "boolean",
     default: false,
   },
-] satisfies ConfigItem[];
+});
 
 export interface Config {
   superscriptOperators: boolean;
