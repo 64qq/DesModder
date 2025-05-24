@@ -2,9 +2,9 @@ import { Inserter, PluginController, Replacer } from "../PluginController";
 import "./better-evaluation-view.less";
 import { ColorEvaluation } from "./components/ColorEvaluation";
 import { ListEvaluation } from "./components/ListEvaluation";
-import { Config, configList } from "./config";
+import { BetterEvaluationViewSettings, configList } from "./config";
 
-export default class BetterEvaluationView extends PluginController<Config> {
+export default class BetterEvaluationView extends PluginController<BetterEvaluationViewSettings> {
   static id = "better-evaluation-view" as const;
   static enabledByDefault = true;
   static config = configList;

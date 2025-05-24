@@ -4,7 +4,7 @@ import "./custom-overrides.less";
 import { getHSVfromRGB, parseCSSHex } from "#plugins/GLesmos/colorParsing.ts";
 import { defineConfig } from "#plugins/config.ts";
 
-interface Config {
+interface SetPrimaryColorSettings {
   primaryColor: string;
   doFavicon: boolean;
 }
@@ -21,7 +21,7 @@ const colorMapping = {
   "--dsm-primary-light-1": 1.11,
 };
 
-const configList = defineConfig<Config>()({
+const configList = defineConfig<SetPrimaryColorSettings>()({
   primaryColor: {
     type: "string",
     variant: "color",
@@ -39,7 +39,7 @@ const faviconLink = document.querySelector(
 ) as HTMLLinkElement;
 const originalHref = faviconLink.href;
 
-export default class SetPrimaryColor extends PluginController<Config> {
+export default class SetPrimaryColor extends PluginController<SetPrimaryColorSettings> {
   static id = "set-primary-color" as const;
   static enabledByDefault = false;
   static config = configList;

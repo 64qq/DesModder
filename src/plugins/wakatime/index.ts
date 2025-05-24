@@ -1,12 +1,12 @@
 import { Console } from "../../globals/window";
 import { getCurrentGraphTitle } from "../../utils/depUtils";
 import { PluginController } from "../PluginController";
-import { Config, configList } from "./config";
+import { WakatimeSettings, configList } from "./config";
 import { listenToMessageDown, postMessageUp } from "#utils/messages.ts";
 
 const heartbeatInterval = 120 * 1000;
 
-export default class Wakatime extends PluginController<Config> {
+export default class Wakatime extends PluginController<WakatimeSettings> {
   static id = "wakatime" as const;
   static config = configList;
   static enabledByDefault = false;

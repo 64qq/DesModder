@@ -1,4 +1,4 @@
-import { Config } from "./config";
+import { WolframToDesmosSettings } from "./config";
 
 // IMPORTANT
 // isIllegalASCIIMath() is REQUIRED BEFORE executing wolfram2desmos()
@@ -51,7 +51,7 @@ export function isIllegalASCIIMath(input: string) {
   return true;
 }
 
-export function wolfram2desmos(input: string, config: Config) {
+export function wolfram2desmos(input: string, config: WolframToDesmosSettings) {
   // FUNCTIONS
   // returns the first match's index
   function find(expr: RegExp) {

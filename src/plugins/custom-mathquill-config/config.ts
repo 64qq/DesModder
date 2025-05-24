@@ -1,6 +1,6 @@
 import { defineConfig } from "#plugins/config.ts";
 
-export const configList = defineConfig<Config>()({
+export const configList = defineConfig<CustomMathQuillConfigSettings>()({
   superscriptOperators: {
     type: "boolean",
     default: false,
@@ -53,7 +53,7 @@ export const configList = defineConfig<Config>()({
   },
 });
 
-export interface Config {
+export interface CustomMathQuillConfigSettings {
   superscriptOperators: boolean;
   commaDelimiter: boolean;
   delimiterOverride: string;
