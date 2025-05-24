@@ -2,6 +2,7 @@ import { PluginController } from "../PluginController";
 import "./_overrides.less";
 import "./custom-overrides.less";
 import { getHSVfromRGB, parseCSSHex } from "#plugins/GLesmos/colorParsing.ts";
+import { defineConfig } from "#plugins/config.ts";
 
 interface Config {
   primaryColor: string;
@@ -20,19 +21,17 @@ const colorMapping = {
   "--dsm-primary-light-1": 1.11,
 };
 
-const configList = [
-  {
-    key: "primaryColor",
+const configList = defineConfig<Config>()({
+  primaryColor: {
     type: "string",
     variant: "color",
     default: DEFAULT_COLOR,
   },
-  {
-    key: "doFavicon",
+  doFavicon: {
     type: "boolean",
     default: true,
   },
-] as const;
+});
 
 // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
 const faviconLink = document.querySelector(

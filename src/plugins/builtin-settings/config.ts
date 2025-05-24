@@ -1,67 +1,57 @@
-export const settingsConfigList = [
-  {
-    key: "advancedStyling",
-    type: "boolean",
-    default: true,
-  },
-  {
-    key: "graphpaper",
-    type: "boolean",
-    default: true,
-  },
-  {
-    key: "zoomButtons",
-    type: "boolean",
-    default: true,
-    shouldShow: (config: Config) => !!config.graphpaper,
-  },
-  {
-    key: "expressions",
-    type: "boolean",
-    default: true,
-    shouldShow: (config: Config) => !!config.graphpaper,
-  },
-  {
-    key: "authorFeatures",
-    type: "boolean",
-    default: false,
-  },
-  {
-    key: "pointsOfInterest",
-    type: "boolean",
-    default: true,
-  },
-  {
-    key: "trace",
-    type: "boolean",
-    default: true,
-  },
-  {
-    key: "keypad",
-    name: "Show keypad",
-    type: "boolean",
-    default: true,
-  },
-  {
-    key: "showPerformanceMeter",
-    name: "Show performance meter",
-    type: "boolean",
-    default: false,
-  },
-  // `as const` ensures that the key values can be used as types
-  // instead of the type 'string'
-] as const;
+import { defineConfig } from "#plugins/config.ts";
 
-export const specialConfigList = [
-  {
-    key: "showIDs",
-    name: "Show IDs",
+export const settingsConfigList = defineConfig<SettingsConfig>()({
+  advancedStyling: {
+    type: "boolean",
+    default: true,
+  },
+  graphpaper: {
+    type: "boolean",
+    default: true,
+  },
+  zoomButtons: {
+    type: "boolean",
+    default: true,
+    shouldShow: (config) => !!config.graphpaper,
+  },
+  expressions: {
+    type: "boolean",
+    default: true,
+    shouldShow: (config) => !!config.graphpaper,
+  },
+  authorFeatures: {
     type: "boolean",
     default: false,
   },
-] as const;
+  pointsOfInterest: {
+    type: "boolean",
+    default: true,
+  },
+  trace: {
+    type: "boolean",
+    default: true,
+  },
+  keypad: {
+    type: "boolean",
+    default: true,
+  },
+  showPerformanceMeter: {
+    type: "boolean",
+    default: false,
+  },
+});
 
-export const configList = [...settingsConfigList, ...specialConfigList];
+export const specialConfigList = defineConfig<SpecialConfig>()({
+  showIDs: {
+    type: "boolean",
+    default: false,
+  },
+});
+
+export const configList = [
+  ...settingsConfigList,
+  ...specialConfigList,
+] as const;
 
 export interface SettingsConfig {
   advancedStyling: boolean;
@@ -77,6 +67,8 @@ export interface SettingsConfig {
   showPerformanceMeter: boolean;
 }
 
-export interface Config extends SettingsConfig {
+export interface SpecialConfig {
   showIDs: boolean;
 }
+
+export interface Config extends SettingsConfig, SpecialConfig {}

@@ -1,25 +1,22 @@
-export const configList = [
-  {
-    key: "splitProjects",
+import { defineConfig } from "#plugins/config.ts";
+
+export const configList = defineConfig<Config>()({
+  splitProjects: {
     type: "boolean",
     default: false,
   },
-  {
-    key: "projectName",
+  projectName: {
     type: "string",
     default: "Desmos Projects",
     variant: "text",
     shouldShow: (config: Config) => !config.splitProjects,
   },
-  {
-    key: "secretKey",
+  secretKey: {
     type: "string",
     variant: "password",
     default: "",
   },
-  // `as const` ensures that the key values can be used as types
-  // instead of the type 'string'
-] as const;
+});
 
 export interface Config {
   splitProjects: boolean;

@@ -1,23 +1,20 @@
-import { ConfigItem } from "#plugins/config.ts";
+import { defineConfig } from "#plugins/config.ts";
 
-export const configList: ConfigItem[] = [
-  {
-    key: "lists",
+export const configList = defineConfig<Config>()({
+  lists: {
     type: "boolean",
     default: true,
   },
-  {
-    key: "colors",
+  colors: {
     type: "boolean",
     default: true,
   },
-  {
-    key: "colorLists",
+  colorLists: {
     type: "boolean",
     default: true,
-    shouldShow: (current: Config) => current.lists && current.colors,
+    shouldShow: (current) => current.lists && current.colors,
   },
-];
+});
 
 export interface Config {
   lists: boolean;

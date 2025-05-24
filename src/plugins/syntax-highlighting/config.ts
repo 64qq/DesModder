@@ -1,51 +1,44 @@
-import { ConfigItem } from "#plugins/config.ts";
+import { defineConfig } from "#plugins/config.ts";
 
-export const configList = [
-  {
+export const configList = defineConfig<Config>()({
+  bracketPairColorization: {
     type: "boolean",
-    key: "bracketPairColorization",
     default: true,
   },
-  {
+  bracketPairColorizationColors: {
     type: "color-list",
-    key: "bracketPairColorizationColors",
     default: ["#000000", "#369646", "#6042a6", "#a03f21"],
     shouldShow: (config) => config.bracketPairColorization,
   },
-  {
+  bpcColorInText: {
     type: "boolean",
-    key: "bpcColorInText",
     default: false,
     shouldShow: (config) => config.bracketPairColorization,
   },
-  {
+  thickenBrackets: {
     type: "number",
     variant: "range",
     min: 0,
     max: 10,
     step: 1,
     default: 0,
-    key: "thickenBrackets",
     shouldShow: (config) => config.bracketPairColorization,
   },
-  {
+  highlightBracketBlocks: {
     type: "boolean",
-    key: "highlightBracketBlocks",
     default: true,
   },
-  {
+  highlightBracketBlocksHover: {
     type: "boolean",
-    key: "highlightBracketBlocksHover",
     default: false,
   },
-  {
+  underlineHighlightedRanges: {
     type: "boolean",
-    key: "underlineHighlightedRanges",
     default: false,
     shouldShow: (config) =>
       config.highlightBracketBlocks || config.highlightBracketBlocksHover,
   },
-] satisfies readonly ConfigItem[];
+});
 
 export interface Config {
   bracketPairColorizationColors: string[];

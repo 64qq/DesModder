@@ -14,6 +14,7 @@ import { MathQuillField, MathQuillView } from "#components";
 import { DispatchedEvent, ItemModel, TextModel } from "#globals";
 import { PluginController } from "#plugins/PluginController.ts";
 import { isDescendant } from "#utils/utils.ts";
+import { defineConfig } from "#plugins/config.ts";
 
 export type BoundIdentifier =
   | {
@@ -48,20 +49,20 @@ export function getMQCursorPosition(focusedMQ: MathQuillField) {
   ).cursor?.cursorElement?.getBoundingClientRect();
 }
 
-export default class Intellisense extends PluginController<{
+interface IntellisenseSettings {
   subscriptify: boolean;
-}> {
+}
+export default class Intellisense extends PluginController<IntellisenseSettings> {
   static id = "intellisense" as const;
   static enabledByDefault = false;
   static descriptionLearnMore = "https://www.desmodder.com/intellisense";
 
-  static config = [
-    {
+  static config = defineConfig<IntellisenseSettings>()({
+    subscriptify: {
       type: "boolean",
-      key: "subscriptify",
       default: false,
     },
-  ] as const;
+  });
 
   view: MountedComponent | undefined;
 
