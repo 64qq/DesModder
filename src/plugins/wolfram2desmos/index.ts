@@ -1,5 +1,5 @@
 import { PluginController } from "../PluginController";
-import { Config, configList } from "./config";
+import { WolframToDesmosSettings, configList } from "./config";
 import { wolfram2desmos, isIllegalASCIIMath } from "./wolfram2desmos";
 
 // https://stackoverflow.com/a/34278578
@@ -20,7 +20,7 @@ function typeInTextArea(
 
 // This controller manages the focus events of Expression panel
 
-export default class WolframToDesmos extends PluginController<Config> {
+export default class WolframToDesmos extends PluginController<WolframToDesmosSettings> {
   static id = "wolfram2desmos" as const;
   static enabledByDefault = true;
   static config = configList;

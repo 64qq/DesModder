@@ -1,6 +1,6 @@
 import { defineConfig } from "#plugins/config.ts";
 
-export const configList = defineConfig<Config>()({
+export const configList = defineConfig<SyntaxHighlightingSettings>()({
   bracketPairColorization: {
     type: "boolean",
     default: true,
@@ -40,7 +40,7 @@ export const configList = defineConfig<Config>()({
   },
 });
 
-export interface Config {
+export interface SyntaxHighlightingSettings {
   bracketPairColorizationColors: string[];
   bracketPairColorization: boolean;
   bpcColorInText: boolean;

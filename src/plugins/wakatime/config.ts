@@ -1,6 +1,6 @@
 import { defineConfig } from "#plugins/config.ts";
 
-export const configList = defineConfig<Config>()({
+export const configList = defineConfig<WakatimeSettings>()({
   splitProjects: {
     type: "boolean",
     default: false,
@@ -9,7 +9,7 @@ export const configList = defineConfig<Config>()({
     type: "string",
     default: "Desmos Projects",
     variant: "text",
-    shouldShow: (config: Config) => !config.splitProjects,
+    shouldShow: (config: WakatimeSettings) => !config.splitProjects,
   },
   secretKey: {
     type: "string",
@@ -18,7 +18,7 @@ export const configList = defineConfig<Config>()({
   },
 });
 
-export interface Config {
+export interface WakatimeSettings {
   splitProjects: boolean;
   projectName: string;
   secretKey: string;

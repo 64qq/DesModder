@@ -1,6 +1,6 @@
 import { defineConfig } from "#plugins/config.ts";
 
-export const configList = defineConfig<Config>()({
+export const configList = defineConfig<BetterEvaluationViewSettings>()({
   lists: {
     type: "boolean",
     default: true,
@@ -16,7 +16,7 @@ export const configList = defineConfig<Config>()({
   },
 });
 
-export interface Config {
+export interface BetterEvaluationViewSettings {
   lists: boolean;
   colors: boolean;
   colorLists: boolean;

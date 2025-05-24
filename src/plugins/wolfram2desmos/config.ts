@@ -1,6 +1,6 @@
 import { defineConfig } from "#plugins/config.ts";
 
-export const configList = defineConfig<Config>()({
+export const configList = defineConfig<WolframToDesmosSettings>()({
   reciprocalExponents2Surds: {
     type: "boolean",
     default: false,
@@ -11,7 +11,7 @@ export const configList = defineConfig<Config>()({
   },
 });
 
-export interface Config {
+export interface WolframToDesmosSettings {
   reciprocalExponents2Surds: boolean;
   derivativeLoopLimit: boolean;
 }

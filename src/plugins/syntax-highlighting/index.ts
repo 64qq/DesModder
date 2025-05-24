@@ -1,6 +1,6 @@
 import { PluginController } from "../PluginController";
 import { generateBracketPairColorizationCSS } from "./bracket-pair-colorization";
-import { Config, configList } from "./config";
+import { SyntaxHighlightingSettings, configList } from "./config";
 import "./index.less";
 
 // assumes valid input;
@@ -12,7 +12,7 @@ export function hex2rgb(hex: string): [number, number, number] {
   ];
 }
 
-export default class SyntaxHighlighting extends PluginController<Config> {
+export default class SyntaxHighlighting extends PluginController<SyntaxHighlightingSettings> {
   static id = "syntax-highlighting" as const;
   static enabledByDefault = false;
   static config = configList;

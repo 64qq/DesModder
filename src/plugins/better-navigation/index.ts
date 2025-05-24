@@ -43,7 +43,7 @@ function isAtStartOrEndOfASubscriptOrSuperscript(mq: MathQuillField, dir: Dir) {
   );
 }
 
-interface BetterNavSettings {
+interface BetterNavigationSettings {
   ctrlArrow: boolean;
   scrollableExpressions: boolean;
   showScrollbar: boolean;
@@ -61,10 +61,10 @@ const NavigationTable: Record<
   "Ctrl-Del": { dir: R, mode: "delete" },
 };
 
-export default class BetterNavigation extends PluginController<BetterNavSettings> {
+export default class BetterNavigation extends PluginController<BetterNavigationSettings> {
   static id = "better-navigation" as const;
   static enabledByDefault = true;
-  static config = defineConfig<BetterNavSettings>()({
+  static config = defineConfig<BetterNavigationSettings>()({
     ctrlArrow: {
       type: "boolean",
       default: true,

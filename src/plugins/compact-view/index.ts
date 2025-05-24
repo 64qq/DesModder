@@ -1,13 +1,13 @@
 import { PluginController } from "../PluginController";
 import "./compact.css";
 import "./compact.less";
-import { Config, configList } from "./config";
+import { CompactViewSettings, configList } from "./config";
 
 function toggleBodyClass(className: string, bool: boolean) {
   document.body.classList.toggle(className, bool);
 }
 
-export default class CompactView extends PluginController<Config> {
+export default class CompactView extends PluginController<CompactViewSettings> {
   static id = "compact-view" as const;
   static enabledByDefault = false;
   static config = configList;

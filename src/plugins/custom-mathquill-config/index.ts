@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-dynamic-delete */
-import { Config, configList } from "./config";
+import { CustomMathQuillConfigSettings, configList } from "./config";
 import "./custom-mathquill-config.less";
 import { MathQuillConfig, MathQuillField } from "#components";
 import window from "#globals";
@@ -16,7 +16,7 @@ const defaultConfig: MathQuillConfig = {
   typingPercentWritesPercentOf: true,
 };
 
-export default class CustomMathQuillConfig extends PluginController<Config> {
+export default class CustomMathQuillConfig extends PluginController<CustomMathQuillConfigSettings> {
   static id = "custom-mathquill-config" as const;
   static enabledByDefault = false;
   static config = configList;
@@ -26,7 +26,7 @@ export default class CustomMathQuillConfig extends PluginController<Config> {
   autoCommandInjections =
     " gamma Gamma delta Delta epsilon zeta eta Theta iota kappa lambda Lambda mu Xi xi Pi sigma Sigma upsilon Upsilon Phi chi psi Psi omega Omega";
 
-  updateConfig(config: Config) {
+  updateConfig(config: CustomMathQuillConfigSettings) {
     this.cc.rootElt.classList.toggle("commaizer", config.commaDelimiter);
 
     this.cc.rootElt.classList.toggle("less-f-spacing", config.lessFSpacing);

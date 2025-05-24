@@ -1,6 +1,6 @@
 import { defineConfig } from "#plugins/config.ts";
 
-export const configList = defineConfig<Config>()({
+export const configList = defineConfig<CompactViewSettings>()({
   compactFactor: {
     type: "number",
     min: 0,
@@ -59,7 +59,7 @@ export const configList = defineConfig<Config>()({
   },
 });
 
-export interface Config {
+export interface CompactViewSettings {
   textFontSize: number;
   mathFontSize: number;
   bracketFontSizeFactor: number;

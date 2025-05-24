@@ -1,6 +1,6 @@
 import { PluginController } from "../PluginController";
 import {
-  Config,
+  BuiltinSettingsSettings,
   configList,
   settingsConfigList,
   specialConfigList,
@@ -14,11 +14,11 @@ function hasQueryFlag(s: string) {
   return params.has(s) && params.get(s) !== "false";
 }
 
-export default class BuiltinSettings extends PluginController<Config> {
+export default class BuiltinSettings extends PluginController<BuiltinSettingsSettings> {
   static id = "builtin-settings" as const;
   static enabledByDefault = true;
   static config = configList;
-  initialSettings: null | Config = null;
+  initialSettings: null | BuiltinSettingsSettings = null;
 
   afterEnable() {
     this.initialSettings = { ...this.settings };
@@ -52,7 +52,7 @@ export default class BuiltinSettings extends PluginController<Config> {
     this.updateConfig(this.settings);
   }
 
-  private updateURL(config: Config) {
+  private updateURL(config: BuiltinSettingsSettings) {
     const params = new URLSearchParams(window.location.search);
     for (const key of specialKeys) {
       switch (key) {
@@ -76,7 +76,7 @@ export default class BuiltinSettings extends PluginController<Config> {
     }
   }
 
-  private updateSettings(config: Config) {
+  private updateSettings(config: BuiltinSettingsSettings) {
     let { graphpaper, zoomButtons, expressions } = config;
     // zoomButtons is only allowed to be true if graphpaper is true.
     zoomButtons &&= graphpaper;
@@ -101,7 +101,7 @@ export default class BuiltinSettings extends PluginController<Config> {
     });
   }
 
-  updateConfig(config: Config) {
+  updateConfig(config: BuiltinSettingsSettings) {
     this.updateURL(config);
     this.updateSettings(config);
   }

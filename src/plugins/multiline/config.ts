@@ -1,6 +1,6 @@
 import { defineConfig } from "#plugins/config.ts";
 
-export const configList = defineConfig<Config>()({
+export const configList = defineConfig<MultilineSettings>()({
   determineLineBreaksAutomatically: {
     type: "boolean",
     default: true,
@@ -43,7 +43,7 @@ export const configList = defineConfig<Config>()({
   },
 });
 
-export interface Config {
+export interface MultilineSettings {
   widthBeforeMultiline: number;
   automaticallyMultilinify: boolean;
   determineLineBreaksAutomatically: boolean;

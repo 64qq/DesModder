@@ -1,5 +1,5 @@
 import { PluginController } from "../PluginController";
-import { Config, configList } from "./config";
+import { MultilineSettings, configList } from "./config";
 import "./multiline.less";
 import { CollapseMode, unverticalify, verticalify } from "./verticalify";
 import { MathQuillField, MathQuillView } from "#components";
@@ -26,7 +26,7 @@ function isNextToTripleSpaceLineBreak(mq: MathQuillField, dir: Dir) {
   );
 }
 
-export default class Multiline extends PluginController<Config> {
+export default class Multiline extends PluginController<MultilineSettings> {
   static id = "multiline" as const;
   static enabledByDefault = false;
   static config = configList;
