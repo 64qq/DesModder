@@ -2,7 +2,7 @@
 import { PluginController } from "../PluginController";
 import { MathQuillField, MathQuillView } from "src/components";
 import { getController } from "../intellisense/latex-parsing";
-import { ConfigItem } from "#plugins/index.ts";
+import { ConfigItem } from "#plugins/config.ts";
 
 import "./index.less";
 

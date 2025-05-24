@@ -1,4 +1,4 @@
-import { ConfigItem, GenericSettings } from ".";
+import { ConfigItem, GenericSettings } from "./config";
 import DSM from "#DSM";
 
 export class PluginController<

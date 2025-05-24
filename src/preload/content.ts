@@ -1,4 +1,5 @@
-import { GenericSettings, PluginID } from "../plugins";
+import { PluginID } from "../plugins";
+import { GenericSettings } from "../plugins/config";
 import {
   HeartbeatOptions,
   sendHeartbeat,

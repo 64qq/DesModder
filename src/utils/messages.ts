@@ -6,7 +6,8 @@ Post message conventions:
   get-* = message from page to content script, asking to get data in chrome.storage
 */
 import { WindowHeartbeatOptions } from "#plugins/wakatime/heartbeat.ts";
-import { GenericSettings, PluginID } from "#plugins/index.ts";
+import { PluginID } from "#plugins/index.ts";
+import { GenericSettings } from "#plugins/config.ts";
 
 type MessageWindowToContent =
   | {
