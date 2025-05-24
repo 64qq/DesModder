@@ -1,8 +1,8 @@
-import { ConfigItem, GenericSettings } from "./config";
+import { ConfigItem, OptionalGenericSettings } from "./config";
 import DSM from "#DSM";
 
 export class PluginController<
-  Settings extends GenericSettings | undefined = undefined,
+  Settings extends OptionalGenericSettings<Settings> = undefined,
 > {
   static descriptionLearnMore?: string = undefined;
   static forceEnabled?: boolean = undefined;

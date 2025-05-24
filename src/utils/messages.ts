@@ -7,7 +7,7 @@ Post message conventions:
 */
 import { WindowHeartbeatOptions } from "#plugins/wakatime/heartbeat.ts";
 import { PluginID } from "#plugins/index.ts";
-import { GenericSettings } from "#plugins/config.ts";
+import { OptionalGenericSettings } from "#plugins/config.ts";
 
 type MessageWindowToContent =
   | {
@@ -20,7 +20,7 @@ type MessageWindowToContent =
     }
   | {
       type: "set-plugin-settings";
-      value: Record<PluginID, GenericSettings | undefined>;
+      value: Record<PluginID, OptionalGenericSettings>;
     }
   | {
       type: "get-initial-data";
@@ -35,7 +35,7 @@ type MessageContentToWindow =
       type: "apply-initial-data";
       pluginsEnabled: Record<PluginID, boolean | undefined>;
       pluginsForceDisabled: PluginID[];
-      pluginSettings: Record<PluginID, GenericSettings | undefined>;
+      pluginSettings: Record<PluginID, OptionalGenericSettings>;
       scriptURL: string;
     }
   | HeartbeatError;
@@ -50,7 +50,12 @@ function postMessage<T extends { type: string }>(message: T) {
   window.postMessage(message, "*");
 }
 
-export function postMessageUp(message: MessageWindowToContent) {
+export function postMessageUp<
+  ID extends PluginID,
+  Settings extends OptionalGenericSettings<Settings>,
+>(message: { type: "set-plugin-settings"; value: Record<ID, Settings> }): void;
+export function postMessageUp(message: MessageWindowToContent): void;
+export function postMessageUp(message: MessageWindowToContent): void {
   postMessage(message);
 }
 

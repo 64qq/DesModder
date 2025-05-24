@@ -67,6 +67,9 @@ type BaseSettings = Record<string, SettingValue>;
 export type GenericSettings<TSettings extends BaseSettings = BaseSettings> = {
   [K in keyof TSettings]-?: Extract<TSettings[K], SettingValue>;
 };
+export type OptionalGenericSettings<
+  TSettings extends BaseSettings | undefined = BaseSettings,
+> = GenericSettings<Exclude<TSettings, undefined>> | undefined;
 
 type ConfigMapValue<TConfigItem> = TConfigItem extends TConfigItem
   ? Omit<TConfigItem, "key">
