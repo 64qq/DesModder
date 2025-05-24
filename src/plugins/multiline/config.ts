@@ -1,63 +1,47 @@
-import { ConfigItem } from "#plugins/config.ts";
+import { defineConfig } from "#plugins/config.ts";
 
-export const configList = [
-  {
+export const configList = defineConfig<Config>()({
+  determineLineBreaksAutomatically: {
     type: "boolean",
     default: true,
-    key: "determineLineBreaksAutomatically",
   },
-  {
+  widthBeforeMultiline: {
     indentationLevel: 1,
     type: "number",
     default: 30,
     min: 0,
     max: Infinity,
     step: 1,
-    key: "widthBeforeMultiline",
-    shouldShow(current) {
-      return current.determineLineBreaksAutomatically;
-    },
+    shouldShow: (current) => current.determineLineBreaksAutomatically,
   },
-  {
+  disableAutomaticLineBreaksForHandAlignedExpressions: {
     indentationLevel: 1,
     type: "boolean",
     default: true,
-    key: "disableAutomaticLineBreaksForHandAlignedExpressions",
-    shouldShow(current) {
-      return current.determineLineBreaksAutomatically;
-    },
+    shouldShow: (current) => current.determineLineBreaksAutomatically,
   },
-  {
+  automaticallyMultilinify: {
     indentationLevel: 1,
     type: "boolean",
     default: true,
-    key: "automaticallyMultilinify",
-
-    shouldShow(current) {
-      return current.determineLineBreaksAutomatically;
-    },
+    shouldShow: (current) => current.determineLineBreaksAutomatically,
   },
-  {
+  multilinifyDelayAfterEdit: {
     indentationLevel: 2,
     type: "number",
     default: 1000,
     min: 0,
     max: Infinity,
     step: 1,
-    key: "multilinifyDelayAfterEdit",
-    shouldShow(current) {
-      return (
-        current.automaticallyMultilinify &&
-        current.determineLineBreaksAutomatically
-      );
-    },
+    shouldShow: (current) =>
+      current.automaticallyMultilinify &&
+      current.determineLineBreaksAutomatically,
   },
-  {
+  spacesToNewlines: {
     type: "boolean",
     default: true,
-    key: "spacesToNewlines",
   },
-] satisfies ConfigItem[];
+});
 
 export interface Config {
   widthBeforeMultiline: number;

@@ -1,17 +1,15 @@
-export const configList = [
-  {
-    key: "reciprocalExponents2Surds",
+import { defineConfig } from "#plugins/config.ts";
+
+export const configList = defineConfig<Config>()({
+  reciprocalExponents2Surds: {
     type: "boolean",
     default: false,
   },
-  {
-    key: "derivativeLoopLimit",
+  derivativeLoopLimit: {
     type: "boolean",
     default: true,
   },
-  // `as const` ensures that the key values can be used as types
-  // instead of the type 'string'
-] as const;
+});
 
 export interface Config {
   reciprocalExponents2Surds: boolean;

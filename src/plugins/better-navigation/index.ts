@@ -2,7 +2,7 @@
 import { PluginController } from "../PluginController";
 import { MathQuillField, MathQuillView } from "src/components";
 import { getController } from "../intellisense/latex-parsing";
-import { ConfigItem } from "#plugins/config.ts";
+import { defineConfig } from "#plugins/config.ts";
 
 import "./index.less";
 
@@ -64,24 +64,21 @@ const NavigationTable: Record<
 export default class BetterNavigation extends PluginController<BetterNavSettings> {
   static id = "better-navigation" as const;
   static enabledByDefault = true;
-  static config = [
-    {
+  static config = defineConfig<BetterNavSettings>()({
+    ctrlArrow: {
       type: "boolean",
       default: true,
-      key: "ctrlArrow",
     },
-    {
+    scrollableExpressions: {
       type: "boolean",
       default: false,
-      key: "scrollableExpressions",
     },
-    {
+    showScrollbar: {
       type: "boolean",
       default: true,
-      key: "showScrollbar",
       shouldShow: (config) => config.scrollableExpressions,
     },
-  ] satisfies readonly ConfigItem[];
+  });
 
   afterConfigChange(): void {
     document.body.classList.toggle(
