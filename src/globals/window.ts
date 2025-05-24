@@ -15,7 +15,7 @@ import {
   PromptSliderViewComponent,
 } from "../components/desmosComponents";
 import { PluginID } from "../plugins";
-import { GenericSettings } from "../plugins/config";
+import { OptionalGenericSettings } from "../plugins/config";
 import { ItemModel } from "./models";
 import { GraphState } from "../../graph-state";
 import { Calc, CalcController } from "./Calc";
@@ -43,7 +43,7 @@ export interface DWindow extends Window {
   DesModderPreload?: {
     pluginsForceDisabled: Set<PluginID>;
     pluginsEnabled: Record<PluginID, boolean | undefined>;
-    pluginSettings: Record<PluginID, GenericSettings | undefined>;
+    pluginSettings: Record<PluginID, OptionalGenericSettings>;
   };
   DesModderFragile: {
     ExpressionView: Concrete<typeof ExpressionViewComponent>;

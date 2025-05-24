@@ -31,7 +31,7 @@ import WolframToDesmos from "./wolfram2desmos";
 import BetterNavigation from "./better-navigation";
 import OverrideKeystroke from "../core-plugins/override-keystroke";
 import { DispatchedEvent } from "src/globals/extra-actions";
-import type { ConfigItem, GenericSettings } from "./config";
+import type { ConfigItem, OptionalGenericSettings } from "./config";
 
 /**
  * Life cycle:
@@ -46,7 +46,7 @@ import type { ConfigItem, GenericSettings } from "./config";
  * afterDisable
  */
 export interface PluginInstance<
-  Settings extends GenericSettings | undefined = GenericSettings | undefined,
+  Settings extends OptionalGenericSettings<Settings> = OptionalGenericSettings,
 > {
   afterEnable(): void;
   afterConfigChange(): void;
@@ -66,7 +66,7 @@ export interface PluginInstance<
 }
 
 export interface Plugin<
-  Settings extends GenericSettings | undefined = GenericSettings | undefined,
+  Settings extends OptionalGenericSettings<Settings> = OptionalGenericSettings,
 > {
   /** The ID is fixed permanently, even for future releases. It is kebab
    * case. If you rename the plugin, keep the ID the same for settings sync */
@@ -166,5 +166,5 @@ export class TransparentPlugins implements KeyToPluginInstance {
 }
 
 export type IDToPluginSettings = {
-  readonly [K in keyof KP as KP[K]["id"]]: GenericSettings | undefined;
+  readonly [K in keyof KP as KP[K]["id"]]: OptionalGenericSettings;
 };

@@ -8,7 +8,7 @@ import {
   IDToPluginSettings,
   PluginInstance,
 } from "./plugins";
-import { GenericSettings } from "./plugins/config";
+import { GenericSettings, OptionalGenericSettings } from "./plugins/config";
 import { postMessageUp, mapToRecord, recordToMap } from "#utils/messages.ts";
 
 export default class DSM extends TransparentPlugins {
@@ -90,13 +90,11 @@ export default class DSM extends TransparentPlugins {
     }
   }
 
-  applyStoredSettings(
-    storedSettings: Map<PluginID, GenericSettings | undefined>
-  ) {
+  applyStoredSettings(storedSettings: Map<PluginID, OptionalGenericSettings>) {
     for (const { id } of pluginList) {
       const stored = storedSettings.get(id);
       if (stored !== undefined) {
-        const settings = this.pluginSettings[id];
+        const settings = this.pluginSettings[id] as OptionalGenericSettings;
         for (const key in settings) {
           const storedValue = stored[key];
           if (storedValue !== undefined) {

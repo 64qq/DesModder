@@ -1,5 +1,5 @@
 import { PluginID } from "../plugins";
-import { GenericSettings } from "../plugins/config";
+import { OptionalGenericSettings } from "../plugins/config";
 import {
   HeartbeatOptions,
   sendHeartbeat,
@@ -19,7 +19,7 @@ interface InitialData {
   [StorageKeys.forceDisabled]: PluginID[];
   [StorageKeys.forceDisabledVersion]: string;
   [StorageKeys.pluginsEnabled]: Record<PluginID, boolean | undefined>;
-  [StorageKeys.pluginSettings]: Record<PluginID, GenericSettings | undefined>;
+  [StorageKeys.pluginSettings]: Record<PluginID, OptionalGenericSettings>;
 }
 
 const initialDataDefaults: InitialData = {
@@ -28,10 +28,7 @@ const initialDataDefaults: InitialData = {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   [StorageKeys.pluginsEnabled]: {} as Record<PluginID, boolean | undefined>,
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  [StorageKeys.pluginSettings]: {} as Record<
-    PluginID,
-    GenericSettings | undefined
-  >, // default: no settings known
+  [StorageKeys.pluginSettings]: {} as Record<PluginID, OptionalGenericSettings>, // default: no settings known
 };
 
 type UntrustedInitialData = Partial<InitialData> | undefined;
@@ -67,7 +64,7 @@ function pluginsForceDisabled(items: UntrustedInitialData) {
 }
 
 function pluginSettings(items: UntrustedInitialData) {
-  const settingsDown: Record<PluginID, GenericSettings | undefined> =
+  const settingsDown: Record<PluginID, OptionalGenericSettings> =
     structuredClone(getItem(items, StorageKeys.pluginSettings));
   // Hide secret key from web page
   if (settingsDown.wakatime?.secretKey)
