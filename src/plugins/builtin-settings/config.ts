@@ -71,4 +71,6 @@ export interface SpecialConfig {
   showIDs: boolean;
 }
 
-export interface Config extends SettingsConfig, SpecialConfig {}
+export interface BuiltinSettingsSettings
+  extends SettingsConfig,
+    SpecialConfig {}
