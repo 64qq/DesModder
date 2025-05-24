@@ -6,6 +6,7 @@ import type { AtLeastOne } from "#utils/utils.ts";
 export default class PasteImage extends PluginController {
   static id = "paste-image" as const;
   static enabledByDefault = true;
+  static config = undefined;
 
   pasteHandler = this._pasteHandler.bind(this);
 

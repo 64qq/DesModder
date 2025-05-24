@@ -16,6 +16,7 @@ declare module "src/globals/extra-actions" {
 export default class CodeGolf extends PluginController {
   static id = "code-golf" as const;
   static enabledByDefault = false;
+  static config = undefined;
 
   expressionItemCostPanel(model: ExpressionModel): Inserter {
     return () => GolfStatsPanelFn(this.cc, model);

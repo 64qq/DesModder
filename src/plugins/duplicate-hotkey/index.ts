@@ -4,6 +4,7 @@ import { keys } from "#utils/depUtils.ts";
 export default class DuplicateHotkey extends PluginController {
   static id = "duplicate-expression-hotkey" as const;
   static enabledByDefault = true;
+  static config = undefined;
 
   exppanel: HTMLElement | null = null;
 

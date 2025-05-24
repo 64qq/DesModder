@@ -23,6 +23,7 @@ export default class TextMode extends PluginController {
   static id = "text-mode" as const;
   static enabledByDefault = false;
   static descriptionLearnMore = "https://www.desmodder.com/text-mode";
+  static config = undefined;
 
   inTextMode: boolean = false;
   /**

@@ -19,6 +19,7 @@ declare module "src/globals/extra-actions" {
 export default class FolderTools extends PluginController {
   static id = "folder-tools" as const;
   static enabledByDefault = true;
+  static config = undefined;
 
   actionButtons: ActionButton[] = [
     {

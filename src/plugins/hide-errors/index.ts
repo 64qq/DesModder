@@ -37,6 +37,7 @@ function initPromptSlider() {
 export default class HideErrors extends PluginController {
   static id = "hide-errors" as const;
   static enabledByDefault = true;
+  static config = undefined;
 
   afterEnable() {
     if (!initOnce) {

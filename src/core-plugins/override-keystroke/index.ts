@@ -10,6 +10,7 @@ export default class OverrideKeystroke extends PluginController {
   static id = "override-keystroke" as const;
   static enabledByDefault = true;
   static isCore = true;
+  static config = undefined;
 
   private readonly mqKeystrokeListeners = new Map<
     PluginID,
