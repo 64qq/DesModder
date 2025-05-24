@@ -6,6 +6,7 @@ import "./pinExpressions.less";
 export default class PinExpressions extends PluginController {
   static id = "pin-expressions" as const;
   static enabledByDefault = true;
+  static config = undefined;
 
   actionButtons: ActionButton[] = [
     {

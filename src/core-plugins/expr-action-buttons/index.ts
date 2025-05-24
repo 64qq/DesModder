@@ -7,6 +7,7 @@ export default class ExprActionButtons extends PluginController<undefined> {
   static id = "expr-action-buttons" as const;
   static enabledByDefault = true;
   static isCore = true;
+  static config = undefined;
 
   beforeDisable() {
     throw new Error(

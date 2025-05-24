@@ -13,6 +13,7 @@ export default class PillboxMenus extends PluginController<undefined> {
   static isCore = true;
   expandedPlugin: PluginID | null = null;
   private expandedCategory: string | null = null;
+  static config = undefined;
 
   afterEnable() {
     this.cc.dispatcher.register((e) => {

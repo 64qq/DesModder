@@ -5,6 +5,7 @@ import { DispatchedEvent, TimingData } from "#globals";
 export default class PerformanceInfo extends PluginController {
   static id = "performance-info" as const;
   static enabledByDefault = false;
+  static config = undefined;
 
   timingDataHistory: TimingData[] = [];
   dispatchListenerID!: string;
