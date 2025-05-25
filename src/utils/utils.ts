@@ -180,3 +180,15 @@ type IsReadonly<T extends object, K extends keyof T> = IsEqual<
 export type Concrete<C extends AbstractConstructorType> = new (
   ...args: ConstructorParameters<C>
 ) => InstanceType<C>;
+
+export function pick<const T extends object, K extends keyof T>(
+  obj: T,
+  keys: K[]
+): Pick<T, K> {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  const result = {} as Pick<T, K>;
+  for (const key of keys) {
+    result[key] = obj[key];
+  }
+  return result;
+}
