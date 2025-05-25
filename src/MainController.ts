@@ -6,7 +6,6 @@ import {
   PluginID,
   TransparentPlugins,
   IDToPluginSettings,
-  PluginInstance,
   PluginConfigItemKey,
   PluginConfigItemBoolean,
 } from "./plugins";
@@ -65,12 +64,9 @@ export default class DSM extends TransparentPlugins {
 
   enabledPluginsSorted() {
     const enabledPluginIDs = Object.keys(this.enabledPlugins) as PluginID[];
-    enabledPluginIDs.sort();
-    const plugins: [PluginID, PluginInstance][] = [];
-    for (const id of enabledPluginIDs) {
-      plugins.push([id, this.enabledPlugins[id]!]);
-    }
-    return plugins;
+    return enabledPluginIDs
+      .sort()
+      .map((id) => [id, this.enabledPlugins[id]!] as const);
   }
 
   handleDispatchedAction(evt: DispatchedEvent) {
@@ -171,10 +167,10 @@ export default class DSM extends TransparentPlugins {
   _enablePlugin(id: PluginID) {
     const Plugin = plugins.get(id);
     if (Plugin !== undefined) {
-      const res = new Plugin(this, this.pluginSettings[id] as any as never);
-      const ep = this.enabledPlugins as Record<PluginID, PluginInstance>;
-      ep[Plugin.id] = res;
-      (res as PluginInstance).settings = this.pluginSettings[id];
+      // contravariance
+      const res = new Plugin(this, this.pluginSettings[id] as never);
+      this.enabledPlugins[Plugin.id] = res;
+      res.settings = this.pluginSettings[id];
       this.setPluginEnabled(id, true);
       res.afterEnable();
       this.pillboxMenus?.updateMenuView();
