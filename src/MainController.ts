@@ -7,9 +7,22 @@ import {
   TransparentPlugins,
   IDToPluginSettings,
   PluginInstance,
+  PluginConfigItemKey,
+  PluginConfigItemBoolean,
 } from "./plugins";
-import { GenericSettings, OptionalGenericSettings } from "./plugins/config";
+import {
+  GenericSettings,
+  OptionalGenericSettings,
+  SettingValue,
+} from "./plugins/config";
 import { postMessageUp, mapToRecord, recordToMap } from "#utils/messages.ts";
+import { MergeUnion } from "#utils/utils.ts";
+
+// https://github.com/microsoft/TypeScript/issues/13948
+function record<const K extends PropertyKey, const V>(key: K, value: V) {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  return { [key]: value } as Record<K, V>;
+}
 
 export default class DSM extends TransparentPlugins {
   cc = this.calc.controller;
@@ -213,10 +226,17 @@ export default class DSM extends TransparentPlugins {
     return !this.isPluginForceDisabled(id) && !this.isPluginForceEnabled(id);
   }
 
-  togglePluginSettingBoolean(pluginID: PluginID, key: string) {
+  togglePluginSettingBoolean(
+    pluginID: PluginID,
+    key: PluginConfigItemBoolean["key"]
+  ) {
     const pluginSettings = this.pluginSettings[pluginID];
     if (pluginSettings)
-      this.setPluginSetting(pluginID, key, !(pluginSettings[key] as boolean));
+      this.setPluginSetting(
+        pluginID,
+        key,
+        !(pluginSettings as MergeUnion<typeof pluginSettings>)[key]
+      );
   }
 
   postSetPluginSettingsMessage() {
@@ -253,16 +273,16 @@ export default class DSM extends TransparentPlugins {
 
   setPluginSetting(
     pluginID: PluginID,
-    key: string,
-    value: boolean | string | number | string[],
+    key: PluginConfigItemKey,
+    value: SettingValue,
     temporary: boolean = false
   ) {
-    this.updatePluginSettings(pluginID, { [key]: value }, temporary);
+    this.updatePluginSettings(pluginID, record(key, value), temporary);
   }
 
   private updatePluginSettings(
     pluginID: PluginID,
-    value: any,
+    value: Partial<Record<PluginConfigItemKey, SettingValue>>,
     temporary: boolean
   ) {
     const pluginSettings = this.pluginSettings[pluginID];
@@ -281,7 +301,7 @@ export default class DSM extends TransparentPlugins {
   /** Tests only */
   setAllPluginSettings(settings: IDToPluginSettings) {
     for (const [key, value] of Object.entries(settings)) {
-      this.updatePluginSettings(key as PluginID, value, false);
+      if (value) this.updatePluginSettings(key as PluginID, value, false);
     }
   }
 
