@@ -144,16 +144,16 @@ export type PluginConfigItemString = Extract<
   { type: "string" }
 >;
 
+type Flatten<T> = {
+  [K in keyof T]: T[keyof T];
+};
 // prettier-ignore
 export class TransparentPlugins implements KeyToPluginInstance {
   /** Note that `enabledPlugins[id]` is truthy if and only if `id` is of
    * an enabled plugin. Otherwise, `enabledPlugins[id]` is undefined */
   private readonly ep: IDToPluginInstance = {};
 
-  readonly enabledPlugins = this.ep as Record<
-    PluginID,
-    PluginInstance | undefined
-  >;
+  readonly enabledPlugins: Flatten<IDToPluginInstance> = this.ep;
 
   get pillboxMenus () { return this.ep["pillbox-menus"]; }
   get builtinSettings () { return this.ep["builtin-settings"]; }
