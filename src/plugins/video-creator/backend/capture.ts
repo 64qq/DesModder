@@ -160,7 +160,14 @@ function getClampedMathBounds(vc: VideoCreator, size: ScreenshotOpts) {
   return clampedMathBounds;
 }
 
-async function _screenshot2d(vc: VideoCreator, opts: any) {
+// TypeScript design limitation
+type AsyncScreenshotOpts = Desmos.Calculator["asyncScreenshot"] extends {
+  (opts: infer P0, _: never): void;
+  (...args: never): void;
+}
+  ? P0
+  : never;
+async function _screenshot2d(vc: VideoCreator, opts: AsyncScreenshotOpts) {
   if (vc.fastScreenshots) {
     return await new Promise<string>((resolve) => {
       vc.cc.evaluator.notifyWhenSynced(() =>
@@ -175,13 +182,13 @@ async function _screenshot2d(vc: VideoCreator, opts: any) {
 
 async function screenshot2d(vc: VideoCreator, size: ScreenshotOpts) {
   const clampedMathBounds = getClampedMathBounds(vc, size);
-  const opts = {
+
+  return await _screenshot2d(vc, {
     ...size,
     showLabels: true,
     mathBounds: clampedMathBounds,
-    mode: "contain" as const,
-  };
-  return await _screenshot2d(vc, opts);
+    mode: "contain",
+  });
 }
 
 export interface SliderSettings {
