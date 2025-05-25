@@ -63,9 +63,8 @@ export default class DSM extends TransparentPlugins {
   }
 
   enabledPluginsSorted() {
-    const enabledPluginIDs = Object.keys(this.enabledPlugins) as PluginID[];
-    return enabledPluginIDs
-      .sort()
+    return this.enabledPluginIDs
+      .toSorted()
       .map((id) => [id, this.enabledPlugins[id]!] as const);
   }
 
@@ -196,7 +195,7 @@ export default class DSM extends TransparentPlugins {
   /** Tests only */
   togglePluginsTo(enabled: string[]) {
     const goalEnabled = new Set(enabled);
-    for (const id of Object.keys(this.enabledPlugins) as PluginID[]) {
+    for (const id of this.enabledPluginIDs) {
       if (!goalEnabled.has(id)) this.disablePlugin(id);
     }
     for (const id of enabled as PluginID[]) {

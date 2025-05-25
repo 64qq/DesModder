@@ -1,4 +1,3 @@
-import { PluginID } from "../../plugins";
 import { Inserter, PluginController } from "../../plugins/PluginController";
 import { ActionButtons } from "./components/ActionButtons";
 import { ItemModel } from "#globals";
@@ -20,9 +19,7 @@ export default class ExprActionButtons extends PluginController<undefined> {
   }
 
   order() {
-    const enabled = Object.keys(this.dsm.enabledPlugins) as PluginID[];
-    enabled.sort();
-    return enabled.flatMap((pluginID) =>
+    return this.dsm.enabledPluginIDs.toSorted().flatMap((pluginID) =>
       (this.dsm.enabledPlugins[pluginID]!.actionButtons ?? []).map(
         (eab, i): ActionButtonWithKey => ({
           ...eab,
