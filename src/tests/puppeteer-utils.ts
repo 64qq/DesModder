@@ -133,7 +133,7 @@ export class Driver {
   }
 
   async getEnabledPlugins() {
-    return await this.evaluate(() => Object.keys(DSM.enabledPlugins));
+    return await this.evaluate(() => DSM.enabledPluginIDs);
   }
 
   async getPluginSettings() {

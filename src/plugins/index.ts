@@ -154,6 +154,9 @@ export class TransparentPlugins implements KeyToPluginInstance {
   private readonly ep: IDToPluginInstance = {};
 
   readonly enabledPlugins: Flatten<IDToPluginInstance> = this.ep;
+  get enabledPluginIDs() {
+    return Object.keys(this.ep) as PluginID[];
+  }
 
   get pillboxMenus () { return this.ep["pillbox-menus"]; }
   get builtinSettings () { return this.ep["builtin-settings"]; }
