@@ -1,3 +1,4 @@
+import { pick } from "#utils/utils.ts";
 import { PluginController } from "../PluginController";
 import {
   BuiltinSettingsSettings,
@@ -89,10 +90,7 @@ export default class BuiltinSettings extends PluginController<BuiltinSettingsSet
     if (!zoomButtons) this.calc.updateSettings({ zoomButtons });
     // Copy so that the extraneous entries of config (such as showIDs)
     // do not get sent to `updateSettings`.
-    const settings: any = {};
-    for (const key of settingsKeys) {
-      settings[key] = config[key];
-    }
+    const settings = pick(config, settingsKeys);
     this.calc.updateSettings({
       ...settings,
       zoomButtons,
