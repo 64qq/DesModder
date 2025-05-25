@@ -78,7 +78,7 @@ const ENTER_ELM = ".dcg-action-toggle-edit.dcg-icon-btn";
 const EXIT_ELM = ".dcg-action-toggle-edit.dcg-btn-blue";
 
 export class Driver {
-  enabledPluginsStart!: string[];
+  enabledPluginsStart!: PluginID[];
   pluginSettingsStart!: IDToPluginSettings;
 
   constructor(public readonly page: Page) {}
