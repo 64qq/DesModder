@@ -75,8 +75,11 @@ export interface Plugin<
   descriptionLearnMore?: string;
   enabledByDefault: boolean;
   forceEnabled?: boolean;
-  new (dsm: DSM, config: Settings): PluginInstance<Settings>;
-  config?: readonly ConfigItem[];
+  new (dsm: DSM, settings: Settings): PluginInstance<Settings>;
+  // require passing undefined explicitly rather than omitting it
+  config: Settings extends undefined
+    ? undefined
+    : readonly ConfigItem<Exclude<Settings, undefined>>[];
 }
 
 export const keyToPlugin = {
@@ -108,11 +111,19 @@ export const keyToPlugin = {
   syntaxHighlighting: SyntaxHighlighting,
   betterNavigation: BetterNavigation,
   pasteImage: PasteImage,
-} satisfies Record<string, Plugin<any>>;
+};
 
 export const pluginList = Object.values(keyToPlugin);
 
-export const plugins = new Map(pluginList.map((plugin) => [plugin.id, plugin]));
+export const plugins = new Map(
+  pluginList.map(
+    // Plugin<Settings> is invariant. Shouldn't be a problem since it acts only as a minimal constraint to extract actual settings type
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    <P extends Plugin<any>>(
+      plugin: P extends P ? P & Plugin<InstanceType<P>["settings"]> : never
+    ): [P["id"], P] => [plugin.id, plugin]
+  )
+);
 
 type KP = typeof keyToPlugin;
 type KeyToPluginInstance = {
