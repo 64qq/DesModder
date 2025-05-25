@@ -11,6 +11,10 @@ export type ConfigTypeToSettingValue<T extends ConfigType> = {
   "color-list": string[];
 }[T];
 
+export type ConfigItemToSettings<T extends ConfigItem> = T extends T
+  ? Record<T["key"], ConfigTypeToSettingValue<T["type"]>>
+  : never;
+
 export type InferConfigTypeFromSettingValue<T extends SettingValue> =
   T extends boolean
     ? "boolean"
