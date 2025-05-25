@@ -193,12 +193,12 @@ export default class DSM extends TransparentPlugins {
   }
 
   /** Tests only */
-  togglePluginsTo(enabled: string[]) {
+  togglePluginsTo(enabled: PluginID[]) {
     const goalEnabled = new Set(enabled);
     for (const id of this.enabledPluginIDs) {
       if (!goalEnabled.has(id)) this.disablePlugin(id);
     }
-    for (const id of enabled as PluginID[]) {
+    for (const id of enabled) {
       if (!this.isPluginEnabled(id)) this.enablePlugin(id);
     }
   }
