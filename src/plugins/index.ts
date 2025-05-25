@@ -123,6 +123,26 @@ type IDToPluginInstance = {
 };
 export type PluginID = keyof IDToPluginInstance;
 export type SpecificPlugin = KP[keyof KP];
+type PluginConfig = Exclude<SpecificPlugin["config"], undefined>;
+export type PluginConfigItem = PluginConfig[number];
+export type PluginConfigItemKey = PluginConfigItem["key"];
+
+export type PluginConfigItemColorList = Extract<
+  PluginConfigItem,
+  { type: "color-list" }
+>;
+export type PluginConfigItemNumber = Extract<
+  PluginConfigItem,
+  { type: "number" }
+>;
+export type PluginConfigItemBoolean = Extract<
+  PluginConfigItem,
+  { type: "boolean" }
+>;
+export type PluginConfigItemString = Extract<
+  PluginConfigItem,
+  { type: "string" }
+>;
 
 // prettier-ignore
 export class TransparentPlugins implements KeyToPluginInstance {
@@ -166,5 +186,5 @@ export class TransparentPlugins implements KeyToPluginInstance {
 }
 
 export type IDToPluginSettings = {
-  readonly [K in keyof KP as KP[K]["id"]]: OptionalGenericSettings;
+  readonly [K in keyof KP as KP[K]["id"]]: InstanceType<KP[K]>["settings"];
 };

@@ -15,12 +15,20 @@ import {
   SpecificPlugin,
   PluginID,
   plugins,
+  PluginConfigItemKey,
+  PluginConfigItemColorList,
+  PluginConfigItemBoolean,
+  PluginConfigItemNumber,
+  PluginConfigItemString,
+  PluginConfigItem,
 } from "#plugins/index.ts";
 import {
   ConfigItem,
   ConfigItemString,
-  GenericSettings,
   ConfigItemNumber,
+  ConfigItemBoolean,
+  ConfigItemColorList,
+  ConfigItemToSettings,
 } from "#plugins/config.ts";
 import PillboxMenus from "..";
 import "./Menu.less";
@@ -182,26 +190,31 @@ export default class Menu extends Component<{
     if (plugin?.config === undefined) return null;
     const pluginSettings = this.pm.dsm.pluginSettings[this.pm.expandedPlugin];
     if (pluginSettings === undefined) return null;
+    type ExpandedPluginConfigItem = PluginConfigItem & ConfigItem;
+    const buildArgs = <T extends ExpandedPluginConfigItem>(item: T) =>
+      [
+        this.pm,
+        item,
+        plugin,
+        pluginSettings as ConfigItemToSettings<T>,
+      ] as const;
     return (
       <div>
-        {plugin.config.map((item: ConfigItem) => (
+        {plugin.config.map((item: ExpandedPluginConfigItem) => (
           <If
             predicate={() =>
-              item.shouldShow?.(pluginSettings, this.pm.dsm) ?? true
+              // contravariance
+              item.shouldShow?.(pluginSettings as never, this.pm.dsm) ?? true
             }
           >
             {() =>
               indentation(
                 item.indentationLevel ?? 0,
                 Match(() => item, {
-                  boolean: () =>
-                    booleanOption(this.pm, item, plugin, pluginSettings),
-                  string: () =>
-                    stringOption(this.pm, item, plugin, pluginSettings),
-                  number: () =>
-                    numberOption(this.pm, item, plugin, pluginSettings),
-                  "color-list": () =>
-                    colorListOption(this.pm, item, plugin, pluginSettings),
+                  boolean: (item) => booleanOption(...buildArgs(item)),
+                  string: (item) => stringOption(...buildArgs(item)),
+                  number: (item) => numberOption(...buildArgs(item)),
+                  "color-list": (item) => colorListOption(...buildArgs(item)),
                 })
               )
             }
@@ -232,15 +245,15 @@ function indentation(level: number, inner: any) {
 
 function colorListOption(
   pm: PillboxMenus,
-  item: ConfigItem,
+  item: ConfigItemColorList & PluginConfigItemColorList,
   plugin: SpecificPlugin,
-  settings: GenericSettings
+  settings: ConfigItemToSettings<ConfigItemColorList>
 ) {
   const setValue = (newValue: string[]) =>
     pm.expandedPlugin &&
     pm.dsm.setPluginSetting(pm.expandedPlugin, item.key, newValue);
 
-  const value = () => settings[item.key] as string[];
+  const value = () => settings[item.key];
 
   return (
     <div class="dsm-settings-item">
@@ -255,9 +268,7 @@ function colorListOption(
             <div class="flex">
               <ol class="dsm-settings-color-list">
                 <For
-                  each={() =>
-                    (settings[item.key] as string[]).map((e, i) => [e, i])
-                  }
+                  each={() => settings[item.key].map((e, i) => [e, i])}
                   key={([e, i]) => `${e}:${i}`}
                 >
                   {([v, i]: [string, number]) => (
@@ -268,7 +279,7 @@ function colorListOption(
                         onChange={(e: InputEvent) => {
                           const newValue = (e.target as HTMLInputElement).value;
                           setValue(
-                            (settings[item.key] as string[]).map((e, j) =>
+                            settings[item.key].map((e, j) =>
                               j === i ? newValue : e
                             )
                           );
@@ -317,12 +328,10 @@ function colorListOption(
 
 function numberOption(
   pm: PillboxMenus,
-  item: ConfigItem,
+  item: ConfigItemNumber & PluginConfigItemNumber,
   plugin: SpecificPlugin,
-  settings: GenericSettings
+  settings: ConfigItemToSettings<ConfigItemNumber>
 ) {
-  const numItem = item as ConfigItemNumber;
-
   const inputHandler = (e: InputEvent) => {
     const value = Number((e.target as HTMLInputElement)?.value);
     if (!isNaN(value)) {
@@ -334,10 +343,10 @@ function numberOption(
   return (
     <div class="dsm-settings-item dsm-settings-number">
       <input
-        type={numItem.variant ?? "number"}
-        min={() => numItem.min}
-        max={() => numItem.max}
-        step={() => numItem.step}
+        type={item.variant ?? "number"}
+        min={() => item.min}
+        max={() => item.max}
+        step={() => item.step}
         value={settings[item.key]}
         onChange={inputHandler}
         onInput={inputHandler}
@@ -359,9 +368,9 @@ function numberOption(
 
 function booleanOption(
   pm: PillboxMenus,
-  item: ConfigItem,
+  item: ConfigItemBoolean & PluginConfigItemBoolean,
   plugin: SpecificPlugin,
-  settings: GenericSettings
+  settings: ConfigItemToSettings<ConfigItemBoolean>
 ) {
   const toggle = () =>
     pm.expandedPlugin &&
@@ -370,7 +379,7 @@ function booleanOption(
     <div class="dsm-settings-item dsm-settings-boolean">
       <Checkbox
         onChange={toggle}
-        checked={() => (settings[item.key] as boolean) ?? false}
+        checked={() => settings[item.key] ?? false}
         ariaLabel={() => item.key}
       ></Checkbox>
       <Tooltip tooltip={configItemDesc(plugin, item)} gravity="n">
@@ -385,19 +394,18 @@ function booleanOption(
 
 function stringOption(
   pm: PillboxMenus,
-  item: ConfigItem,
+  item: ConfigItemString & PluginConfigItemString,
   plugin: SpecificPlugin,
-  settings: GenericSettings
+  settings: ConfigItemToSettings<ConfigItemString>
 ) {
   return (
     <div class="dsm-settings-item dsm-settings-color">
       <input
-        type={(item as ConfigItemString).variant}
+        type={item.variant}
         id={`dsm-settings-item__input-${item.key}`}
         value={settings[item.key]}
         onUpdate={(e: HTMLInputElement) =>
-          !e.classList.contains("dcg-hovered") &&
-          (e.value = settings[item.key] as string)
+          !e.classList.contains("dcg-hovered") && (e.value = settings[item.key])
         }
         onChange={(evt: Event) =>
           pm.expandedPlugin &&
@@ -429,10 +437,10 @@ function stringOption(
 
 class ResetButton extends Component<{
   pm: PillboxMenus;
-  key: string;
+  key: PluginConfigItemKey;
 }> {
   pm!: PillboxMenus;
-  key!: string;
+  key!: PluginConfigItemKey;
 
   init() {
     this.pm = this.props.pm();

@@ -1,4 +1,4 @@
-import { PluginID } from "../plugins";
+import { IDToPluginSettings, PluginID } from "../plugins";
 import { GraphState } from "../../graph-state";
 import Intellisense from "#plugins/intellisense/index.tsx";
 import { Browser, Page } from "puppeteer";
@@ -79,7 +79,7 @@ const EXIT_ELM = ".dcg-action-toggle-edit.dcg-btn-blue";
 
 export class Driver {
   enabledPluginsStart!: string[];
-  pluginSettingsStart!: any;
+  pluginSettingsStart!: IDToPluginSettings;
 
   constructor(public readonly page: Page) {}
 
@@ -175,13 +175,8 @@ export class Driver {
     await this.evaluate((id) => DSM.disablePlugin(id), id);
   }
 
-  async setPluginSetting(id: PluginID, key: string, value: any) {
-    await this.evaluate(
-      (id, key, value) => DSM.setPluginSetting(id, key, value),
-      id,
-      key,
-      value
-    );
+  async setPluginSetting(...args: Parameters<typeof DSM.setPluginSetting>) {
+    await this.evaluate(DSM.setPluginSetting.bind(DSM), ...args);
   }
 
   async waitForSync() {

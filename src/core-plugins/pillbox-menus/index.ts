@@ -3,9 +3,10 @@ import { MenuFunc } from "./components/Menu";
 import PillboxContainer from "./components/PillboxContainer";
 import PillboxMenu from "./components/PillboxMenu";
 import { DCGView } from "#DCGView";
-import { plugins, PluginID } from "#plugins/index.ts";
-import { ConfigItem } from "#plugins/config.ts";
+import { plugins, PluginID, PluginConfigItemKey } from "#plugins/index.ts";
 import { createElementWrapped } from "../../preload/replaceElement";
+import { MergeUnion } from "#utils/utils.ts";
+import { SettingValue } from "#plugins/config.ts";
 
 export default class PillboxMenus extends PluginController<undefined> {
   static id = "pillbox-menus" as const;
@@ -115,25 +116,25 @@ export default class PillboxMenus extends PluginController<undefined> {
     return !this.calc.settings.graphpaper;
   }
 
-  getDefaultSetting(key: string) {
+  getDefaultSetting(key: PluginConfigItemKey): SettingValue | undefined {
     return (
-      this.expandedPlugin &&
-      (
-        plugins.get(this.expandedPlugin)?.config as ConfigItem[] | undefined
-      )?.find((e) => e.key === key)?.default
+      !!this.expandedPlugin &&
+      plugins.get(this.expandedPlugin)?.config?.find((e) => e.key === key)
+        ?.default
     );
   }
 
-  canResetSetting(key: string) {
+  canResetSetting(key: PluginConfigItemKey) {
     if (!this.expandedPlugin) return false;
     const defaultValue = this.getDefaultSetting(key);
+    const settings = this.dsm.pluginSettings[this.expandedPlugin];
     return (
       defaultValue !== undefined &&
-      this.dsm.pluginSettings[this.expandedPlugin]?.[key] !== defaultValue
+      (settings as MergeUnion<typeof settings>)?.[key] !== defaultValue
     );
   }
 
-  resetSetting(key: string) {
+  resetSetting(key: PluginConfigItemKey) {
     this.expandedPlugin &&
       this.canResetSetting(key) &&
       this.dsm.setPluginSetting(
