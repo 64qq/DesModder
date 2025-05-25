@@ -24,14 +24,7 @@ export default class BuiltinSettings extends PluginController<BuiltinSettingsSet
   afterEnable() {
     this.initialSettings = { ...this.settings };
     for (const key of settingsKeys) {
-      this.initialSettings[key] =
-        (
-          this.calc.settings as typeof this.calc.settings & {
-            advancedStyling: boolean;
-            authorFeatures: boolean;
-            showPerformanceMeter: boolean;
-          }
-        )[key] ?? false;
+      this.initialSettings[key] = this.calc.settings[key] ?? false;
     }
     for (const key of specialKeys) {
       switch (key) {
