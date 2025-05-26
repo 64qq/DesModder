@@ -1,5 +1,5 @@
 import "./Button.less";
-import { Component, jsx } from "#DCGView";
+import { Component, ComponentChild, jsx } from "#DCGView";
 import { mergeClass, MaybeClassDict } from "#utils/utils.ts";
 
 export default class Button extends Component<{
@@ -7,7 +7,7 @@ export default class Button extends Component<{
   class?: MaybeClassDict;
   onTap: (e: Event) => void;
   disabled?: boolean;
-  children?: any;
+  children?: ComponentChild;
 }> {
   template() {
     return (
