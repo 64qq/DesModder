@@ -2,8 +2,13 @@ import GLesmos from "..";
 import { jsx } from "#DCGView";
 import { If } from "#components";
 import { format } from "#i18n";
+import { ToggleView } from "./GLesmosToggle";
 
-export function ConfirmLines(glesmos: GLesmos, id: string, ToggleView: any) {
+export function ConfirmLines(
+  glesmos: GLesmos,
+  id: string,
+  ToggleView: ToggleView
+) {
   return (
     <If predicate={() => glesmos.isGlesmosMode(id) && glesmos.isInequality(id)}>
       {() => (
