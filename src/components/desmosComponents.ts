@@ -237,3 +237,9 @@ export abstract class PromptSliderViewComponent extends ClassComponent<
   abstract getMissingBaseCases(): string[];
   abstract getMissingVariables(): string[];
 }
+
+export abstract class ToggleViewComponent extends ClassComponent<{
+  ariaLabel: string;
+  toggled: boolean;
+  onChange: () => void;
+}> {}
