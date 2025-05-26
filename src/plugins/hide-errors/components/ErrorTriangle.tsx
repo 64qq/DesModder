@@ -1,8 +1,12 @@
 import HideErrors from "..";
 import "./ErrorTriangle.less";
-import { jsx } from "#DCGView";
+import { ComponentTemplate, jsx } from "#DCGView";
 
-export function ErrorTriangle(hideErrors: HideErrors, id: string, inner: any) {
+export function ErrorTriangle(
+  hideErrors: HideErrors,
+  id: string,
+  inner: ComponentTemplate
+) {
   return (
     <div
       // Use onClick instead of onTap to allow propagating the event
