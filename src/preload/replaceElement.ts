@@ -1,4 +1,5 @@
 /** This file runs before Desmos is loaded */
+import { Fragile } from "#globals";
 import type {
   ComponentChild,
   ComponentConstructor,
@@ -11,9 +12,11 @@ export function createElementWrapped<Props extends GenericProps<Props>>(
   el: ComponentConstructor<Props>,
   props: OrConst<Props> & { children?: ComponentChild[] }
 ) {
-  const { DCGView } = (Desmos as any).Private.Fragile;
+  const { DCGView } = Fragile;
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const isChildrenOutsideProps =
-    DCGView.createElement({}, {}, "third-arg").children === "third-arg";
+    (DCGView as any).createElement({}, {}, "third-arg").children ===
+    "third-arg";
   if (isChildrenOutsideProps) {
     const { children } = props;
     const childrenArr = !children
@@ -23,7 +26,8 @@ export function createElementWrapped<Props extends GenericProps<Props>>(
         : [children];
     // Old interface
     // TODO-remove-children-props
-    return DCGView.createElement(el, props, ...childrenArr);
+    return (DCGView as any).createElement(el, props, ...childrenArr);
+    /* eslint-enable @typescript-eslint/no-explicit-any */
   }
   return DCGView.createElement(el, props);
 }
