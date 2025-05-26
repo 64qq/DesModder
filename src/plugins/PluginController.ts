@@ -3,6 +3,7 @@ import DSM from "#DSM";
 import { PluginInstance } from ".";
 import { ActionButton } from "../core-plugins/expr-action-buttons";
 import { DispatchedEvent } from "../globals/extra-actions";
+import { ComponentChild } from "#DCGView";
 
 export class PluginController<
   Settings extends OptionalGenericSettings<Settings> = undefined,
@@ -38,5 +39,7 @@ export class PluginController<
   afterUpdateTheComputedWorld?(): void;
 }
 
-export type Replacer<T = any> = undefined | ((old: T) => any);
-export type Inserter = undefined | (() => any);
+export type Replacer<T extends ComponentChild = ComponentChild> =
+  | undefined
+  | ((old: T) => ComponentChild);
+export type Inserter = undefined | (() => ComponentChild);

@@ -1,4 +1,4 @@
-import { Component, jsx } from "#DCGView";
+import { Component, ComponentChild, jsx } from "#DCGView";
 import {
   Toggle,
   If,
@@ -225,7 +225,7 @@ export default class Menu extends Component<{
   }
 }
 
-function indentation(level: number, inner: any) {
+function indentation(level: number, inner: ComponentChild) {
   return (
     <Switch key={() => level}>
       {() => {

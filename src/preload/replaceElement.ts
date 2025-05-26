@@ -40,8 +40,11 @@ export function insertElement(creator: () => undefined | (() => any)) {
   } as any);
 }
 
-export function replaceElement<T>(old: () => T, replacer: () => Replacer<T>) {
-  const { DCGView } = (Desmos as any).Private.Fragile;
+export function replaceElement<T extends ComponentChild>(
+  old: () => T,
+  replacer: () => Replacer<T>
+) {
+  const { DCGView } = Fragile;
   return DCGView.Components.IfElse(() => !!replacer(), {
     true: () => replacer()!(old()),
     false: () => old(),

@@ -1,4 +1,4 @@
-import { jsx } from "#DCGView";
+import { ComponentChild, jsx } from "#DCGView";
 import { StaticMathQuillView } from "#components";
 
 function _ColorEvaluation(val: () => string | string[]) {
@@ -33,7 +33,10 @@ function _ColorEvaluation(val: () => string | string[]) {
   );
 }
 
-export function ColorEvaluation(val: () => string | string[], swatch: any) {
+export function ColorEvaluation(
+  val: () => string | string[],
+  swatch: ComponentChild
+) {
   return (
     <span class="dsm-color-container">
       {_ColorEvaluation(val)}
