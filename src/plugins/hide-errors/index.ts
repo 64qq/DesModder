@@ -1,3 +1,4 @@
+import { ComponentTemplate } from "#DCGView";
 import { Model } from "#globals";
 import { Fragile } from "../../globals/window";
 import { Inserter, PluginController, Replacer } from "../PluginController";
@@ -76,8 +77,8 @@ export default class HideErrors extends PluginController {
   }
 
   /** This is called on all error triangles, but a string ID is only passed for exprs. */
-  errorTriangle(id: string | undefined): Replacer {
+  errorTriangle(id: string | undefined): Replacer<ComponentTemplate> {
     if (id === undefined) return undefined;
-    return (inner: any) => ErrorTriangle(this, id, inner);
+    return (inner: ComponentTemplate) => ErrorTriangle(this, id, inner);
   }
 }
