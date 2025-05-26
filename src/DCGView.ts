@@ -25,7 +25,7 @@ type ToFunc<T> = {
 };
 
 export abstract class ClassComponent<
-  PropsType extends GenericProps = Record<string, unknown>,
+  PropsType extends GenericProps<PropsType> = GenericProps,
 > {
   props!: ToFunc<PropsType>;
   children!: unknown;
@@ -90,12 +90,12 @@ export interface DCGViewModule {
   };
   Class: typeof ClassComponent;
   const: <T>(v: T) => () => T;
-  createElement: <Props extends GenericProps>(
+  createElement: <Props extends GenericProps<Props>>(
     comp: ComponentConstructor<Props>,
     props: WithCommonProps<ToFunc<Props>>
   ) => ComponentTemplate;
   // couldn't figure out type for `comp`, so I just put | any
-  mountToNode: <Props extends GenericProps>(
+  mountToNode: <Props extends GenericProps<Props>>(
     comp: ComponentConstructor<Props>,
     el: HTMLElement,
     props: WithCommonProps<ToFunc<Props>>
@@ -103,11 +103,14 @@ export interface DCGViewModule {
   unmountFromNode: (el: HTMLElement) => void;
 }
 
-export type ComponentConstructor<Props extends GenericProps> =
+export type ComponentConstructor<Props extends GenericProps<Props>> =
   | string
   | typeof ClassComponent<Props>;
-// export type GenericProps = Record<string, (...args: any[]) => any>;
-type GenericProps = any;
+
+type BaseProps = Record<string, unknown>;
+export type GenericProps<Props extends BaseProps = BaseProps> = {
+  [K in keyof Props]: Props[K];
+};
 interface CommonProps {
   class?: () => string;
   didMount?: (elem: HTMLElement) => void;
@@ -172,7 +175,7 @@ declare global {
  * stateless anyway (state control in Model.js)
  */
 
-export function jsx<Props extends GenericProps>(
+export function jsx<Props extends GenericProps<Props>>(
   el: ComponentConstructor<Props>,
   props: OrConst<Props>,
   ...children: ComponentChild[]
