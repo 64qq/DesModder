@@ -1,8 +1,13 @@
 /** This file runs before Desmos is loaded */
-import type { ComponentChild, ComponentConstructor, OrConst } from "../DCGView";
+import type {
+  ComponentChild,
+  ComponentConstructor,
+  GenericProps,
+  OrConst,
+} from "../DCGView";
 import { Replacer } from "../plugins/PluginController";
 
-export function createElementWrapped<Props>(
+export function createElementWrapped<Props extends GenericProps<Props>>(
   el: ComponentConstructor<Props>,
   props: OrConst<Props> & { children?: ComponentChild[] }
 ) {
@@ -20,7 +25,7 @@ export function createElementWrapped<Props>(
     // TODO-remove-children-props
     return DCGView.createElement(el, props, ...childrenArr);
   }
-  return DCGView.createElement(el, props as any);
+  return DCGView.createElement(el, props);
 }
 
 export function insertElement(creator: () => undefined | (() => any)) {
