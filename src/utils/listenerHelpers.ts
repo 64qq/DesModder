@@ -1,9 +1,11 @@
-type HookedFunctionCallback<Fn extends (...args: any[]) => any> = (
+import { FunctionType } from "./utils";
+
+type HookedFunctionCallback<Fn extends FunctionType> = (
   stop: (ret: ReturnType<Fn>) => void,
   ...args: Parameters<Fn>
 ) => void;
 
-type HookedFunction<Fn extends (...args: any[]) => any> = Fn & {
+type HookedFunction<Fn extends FunctionType> = Fn & {
   __isMonkeypatchedIn: true;
   handlers: {
     key: string;
@@ -13,7 +15,7 @@ type HookedFunction<Fn extends (...args: any[]) => any> = Fn & {
   revert: () => void;
 };
 
-type MaybeHookedFunction<Fn extends (...args: any[]) => any> =
+type MaybeHookedFunction<Fn extends FunctionType> =
   | HookedFunction<Fn>
   | (Fn & {
       __isMonkeypatchedIn: undefined;
@@ -21,7 +23,7 @@ type MaybeHookedFunction<Fn extends (...args: any[]) => any> =
 
 export function hookIntoFunction<
   Key extends string,
-  Obj extends Record<Key, (...args: any[]) => any>,
+  Obj extends Record<Key, FunctionType>,
   Fn extends Obj[Key],
 >(
   obj: Obj,
@@ -34,9 +36,7 @@ export function hookIntoFunction<
 
   // monkeypatch the function if it isn't monkeypatched already
   if (!oldfn.__isMonkeypatchedIn) {
-    const monkeypatchedFunction = function (
-      ...args: Parameters<Fn>
-    ): ReturnType<Fn> {
+    const monkeypatchedFunction = function (...args) {
       const handlersArray = (obj[prop] as HookedFunction<Fn>).handlers;
 
       for (const h of handlersArray) {
@@ -53,14 +53,14 @@ export function hookIntoFunction<
       }
 
       return oldfn(...args);
-    };
+    } as HookedFunction<Fn>;
     monkeypatchedFunction.__isMonkeypatchedIn = true;
-    monkeypatchedFunction.handlers = [] as HookedFunction<Fn>["handlers"];
+    monkeypatchedFunction.handlers = [];
     monkeypatchedFunction.revert = () => {
       obj[prop] = oldfn;
     };
 
-    obj[prop] = monkeypatchedFunction as unknown as any;
+    obj[prop] = monkeypatchedFunction;
   }
 
   const monkeypatchedFn = obj[prop] as HookedFunction<Fn>;
