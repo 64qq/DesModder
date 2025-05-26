@@ -1,12 +1,13 @@
 import GLesmos from "..";
 import { jsx } from "#DCGView";
-import { If } from "#components";
+import { If, ToggleViewComponent } from "#components";
 import { format } from "#i18n";
 
+export type ToggleView = typeof ToggleViewComponent;
 export function GLesmosToggle(
   glesmos: GLesmos,
   id: string,
-  ToggleView: any,
+  ToggleView: ToggleView,
   allowInequality: boolean
 ) {
   return (

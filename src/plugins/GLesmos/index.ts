@@ -1,6 +1,6 @@
 import { Inserter, PluginController } from "../PluginController";
 import { ConfirmLines } from "./components/ConfirmLines";
-import { GLesmosToggle } from "./components/GLesmosToggle";
+import { GLesmosToggle, ToggleView } from "./components/GLesmosToggle";
 import "./glesmos.less";
 
 export default class GLesmos extends PluginController {
@@ -98,13 +98,13 @@ export default class GLesmos extends PluginController {
     });
   }
 
-  confirmLines(id: string, ToggleView: any): Inserter {
+  confirmLines(id: string, ToggleView: ToggleView): Inserter {
     return () => ConfirmLines(this, id, ToggleView);
   }
 
   glesmosToggle(
     id: string,
-    ToggleView: any,
+    ToggleView: ToggleView,
     allowInequality: boolean
   ): Inserter {
     return () => GLesmosToggle(this, id, ToggleView, allowInequality);
