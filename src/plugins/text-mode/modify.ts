@@ -37,7 +37,7 @@ export function eventSequenceChanges(
   view: EditorView,
   event: DispatchedEvent,
   analysis: ProgramAnalysis
-): { changes: ChangeSpec[]; effects?: StateEffect<any>[] } {
+): { changes: ChangeSpec[]; effects?: StateEffect<unknown>[] } {
   const tm = view.state.facet(tmPlugin);
   const state = tm.calc.getState();
   if (event.type === "on-evaluator-changes") {
