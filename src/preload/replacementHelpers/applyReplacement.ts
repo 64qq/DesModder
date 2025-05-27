@@ -163,7 +163,7 @@ function applyStringReplacements(
 
   const blockSucceededSymbols = new Set<Block>();
   const blockFailedSymbols = new Map<Block, string>();
-  const failBlock = (b: Block, e: any) => {
+  const failBlock = (b: Block, e: unknown) => {
     const msg = e instanceof Error ? e.message : JSON.stringify(e);
     blockFailedSymbols.set(b, msg);
   };
