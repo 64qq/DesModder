@@ -339,12 +339,16 @@ function findPattern(
   if (found === null) {
     const s = inside.start;
     const len = inside.length;
+    interface TokenLike {
+      type?: never;
+      value: string;
+    }
     throw new Error(
       `Pattern not found: ${fullPattern.map((v) => v.value).join("")} ` +
         `in {start: ${s}, length: ${len}}\n` +
-        str
+        (str as Array<Token | TokenLike>)
           .slice(s, s + 20)
-          .concat({ value: " … " } as any)
+          .concat({ value: " … " })
           .concat(str.slice(s + len - 20, s + len))
           .filter((v) => v.type !== "MultiLineComment")
           .map((v) => (v.value.length < 100 ? v.value : "[long token]"))
