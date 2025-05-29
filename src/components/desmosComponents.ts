@@ -135,10 +135,10 @@ export const InlineMathInputViewGeneral = Fragile.InlineMathInputView;
 
 export const { If, For, IfElse, Input, Switch, SwitchUnion } =
   DCGView.Components;
-export function Match<Disc extends { type: string }>(
+export function Match<Disc extends { type: Key }, Key extends string>(
   discriminant: () => Disc,
   branches: {
-    [K in Disc["type"]]: (r: Disc & { type: K }) => ComponentChild;
+    [K in Key]: (r: Disc & { type: K }) => ComponentChild;
   }
 ): ComponentTemplate {
   return createElementWrapped(Switch, {
@@ -146,7 +146,7 @@ export function Match<Disc extends { type: string }>(
     children: [
       () => {
         const d = discriminant();
-        return branches[d.type as Disc["type"]](d) as any;
+        return branches[d.type](d) as any;
       },
     ],
   });
