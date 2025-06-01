@@ -4,7 +4,6 @@ import frFTL from "./fr.ftl";
 import jaFTL from "./ja.ftl";
 import zhCNFTL from "./zh-CN.ftl";
 import { FluentBundle, FluentResource, FluentVariable } from "@fluent/bundle";
-import window from "#globals";
 
 export function currentLanguage() {
   return window.Desmos?.Private?.Fragile?.currentLanguage?.() ?? "en";
