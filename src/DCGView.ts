@@ -180,10 +180,6 @@ export function jsx<Props extends GenericProps<Props>>(
   props: OrConst<Props>,
   ...children: ComponentChild[]
 ) {
-  /* Handle differences between typescript's expectation and DCGView */
-  if (!Array.isArray(children)) {
-    children = [children];
-  }
   // "Text should be a const or a getter:"
   children = children.map((e) =>
     typeof e === "string" ? DCGView.const(e) : e
