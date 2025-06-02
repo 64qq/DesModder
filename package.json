@@ -9,6 +9,7 @@
   "imports": {
     "#i18n": "./localization/i18n-core.ts",
     "#utils/*": "./src/utils/*",
+    "#common/*": "./common/*",
     "#DSM": "./src/MainController.ts",
     "#globals": "./src/globals/index.ts",
     "#DCGView": "./src/DCGView.ts",

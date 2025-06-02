@@ -1,8 +1,8 @@
+import { Brand } from "#common/utils.ts";
 import type { Grapher3d } from "./Calc";
 
 /** Most methods mutate this. */
-export interface Matrix3 {
-  __nominallyMatrix3: undefined;
+export interface Matrix3 extends Brand<"Matrix3"> {
   /** Row-major 9 elements. */
   elements: number[];
   clone: () => Matrix3;
