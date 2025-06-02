@@ -1,3 +1,4 @@
+import { Brand } from "#common/utils.ts";
 import { Fragile } from "#globals";
 import { FunctionType, PartitionByAssignability } from "#utils/utils.ts";
 import { createElementWrapped } from "./preload/replaceElement";
@@ -118,9 +119,7 @@ interface CommonProps {
   children?: ComponentChild[];
 }
 type WithCommonProps<T> = Omit<T, keyof CommonProps> & CommonProps;
-export interface ComponentTemplate {
-  __nominallyComponentTemplate: undefined;
-}
+export interface ComponentTemplate extends Brand<"ComponentTemplate"> {}
 export type ComponentChild = ComponentTemplate | null | string | (() => string);
 
 export const { Class: Component, mountToNode, unmountFromNode } = DCGView;

@@ -1,4 +1,5 @@
 import * as moo from "#moo";
+import { Brand } from "#common/utils";
 import { ProgramAnalysis } from "../ProgramAnalysis";
 import TextAST, {
   Node,
@@ -68,7 +69,7 @@ const Power = Object.fromEntries(
   _power.map((k, i) => [k, (i * 10) as BindingPower])
 ) as Record<(typeof _power)[number], BindingPower>;
 
-type BindingPower = number & { __nominallyPower: undefined };
+type BindingPower = number & Brand<"BindingPower">;
 
 function minus1(bp: BindingPower) {
   return (bp - 1) as BindingPower;
