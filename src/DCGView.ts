@@ -29,20 +29,16 @@ export abstract class ClassComponent<
   PropsType extends GenericProps<PropsType> = GenericProps,
 > {
   props!: ToFunc<PropsType>;
-  children!: unknown;
+  children?: unknown;
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(_props: OrConst<PropsType>) {}
   init(): void {}
   abstract template(): unknown;
-  _element!:
+  _element?:
+    | { _domNode: HTMLElement }
     | {
-        _domNode: HTMLElement;
-      }
-    | {
-        _domNode: undefined;
-        _element: {
-          _domNode: HTMLElement;
-        };
+        _domNode?: undefined;
+        _element: { _domNode: HTMLElement };
       };
 }
 
