@@ -745,7 +745,7 @@ export default class Intellisense extends PluginController<IntellisenseSettings>
   }
 
   updateCSSForDocstringExpression(model: TextModel | undefined) {
-    const noteElement = model?.dcgView?._element._domNode;
+    const noteElement = model?.dcgView?._element?._domNode;
     if (noteElement) {
       if (model?.text?.includes("@")) {
         noteElement.dataset.isDoc = "true";
