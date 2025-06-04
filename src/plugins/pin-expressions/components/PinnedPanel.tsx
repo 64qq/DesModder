@@ -19,7 +19,7 @@ export function PinnedPanel(pe: PinExpressions, listView: ListView) {
         }
         key={(model) => model.guid}
       >
-        {(model: ItemModel) => (
+        {(model) => (
           <If predicate={() => pe.isExpressionPinned(model.id)}>
             {/** marking as a drag copy causes it not to affect the render shells
              * calculations (all the logic is present already because if the top

@@ -38,7 +38,7 @@ export default class PillboxContainer extends Component<{
           }}
         >
           <For each={() => this.pm.pillboxButtonsOrder} key={(id) => id}>
-            {(id: string) => (
+            {(id) => (
               <Tooltip
                 tooltip={() => format(this.pm.pillboxButtons[id].tooltip)}
                 gravity={() => (this.horizontal ? "s" : "w")}

@@ -5,12 +5,18 @@ import type {
   ComponentConstructor,
   GenericProps,
   OrConst,
+  PropOrConst,
+  PropsChild,
 } from "../DCGView";
-import { Replacer } from "../plugins/PluginController";
+import type { Inserter, Replacer } from "../plugins/PluginController";
+
+type MaybeArray<T> = T | T[];
+export type CreateElementWrappedProps<Props extends GenericProps<Props>> =
+  OrConst<Props> & { children?: MaybeArray<PropOrConst<PropsChild<Props>>> };
 
 export function createElementWrapped<Props extends GenericProps<Props>>(
   el: ComponentConstructor<Props>,
-  props: OrConst<Props> & { children?: ComponentChild[] }
+  props: CreateElementWrappedProps<Props>
 ) {
   const { DCGView } = Fragile;
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -32,12 +38,12 @@ export function createElementWrapped<Props extends GenericProps<Props>>(
   return DCGView.createElement(el, props);
 }
 
-export function insertElement(creator: () => undefined | (() => any)) {
-  const { DCGView } = (Desmos as any).Private.Fragile;
+export function insertElement(creator: () => Inserter) {
+  const { DCGView } = Fragile;
   return createElementWrapped(DCGView.Components.If, {
     predicate: () => !!creator(),
     children: () => creator()!(),
-  } as any);
+  });
 }
 
 export function replaceElement<T extends ComponentChild>(

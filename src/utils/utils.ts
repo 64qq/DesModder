@@ -192,3 +192,5 @@ export function pick<const T extends object, K extends keyof T>(
   }
   return result;
 }
+
+export type WrapInArray<T> = T extends readonly unknown[] ? T : [T];

@@ -117,9 +117,7 @@ export default class Menu extends Component<{
               {() => (
                 <div class="dsm-category-container">
                   <For each={() => categoryPlugins[category]} key={(id) => id}>
-                    {(pluginID: PluginID) =>
-                      this.plugin(plugins.get(pluginID)!)
-                    }
+                    {(pluginID) => this.plugin(plugins.get(pluginID)!)}
                   </For>
                 </div>
               )}
@@ -268,10 +266,10 @@ function colorListOption(
             <div class="flex">
               <ol class="dsm-settings-color-list">
                 <For
-                  each={() => settings[item.key].map((e, i) => [e, i])}
+                  each={() => settings[item.key].map((e, i) => [e, i] as const)}
                   key={([e, i]) => `${e}:${i}`}
                 >
-                  {([v, i]: [string, number]) => (
+                  {([v, i]) => (
                     <div class="dsm-settings-color-list-item-container">
                       <input
                         type="color"

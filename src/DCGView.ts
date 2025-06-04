@@ -1,7 +1,14 @@
 import { Brand } from "#common/utils.ts";
 import { Fragile } from "#globals";
-import { FunctionType, PartitionByAssignability } from "#utils/utils.ts";
-import { createElementWrapped } from "./preload/replaceElement";
+import {
+  FunctionType,
+  PartitionByAssignability,
+  WrapInArray,
+} from "#utils/utils.ts";
+import {
+  createElementWrapped,
+  CreateElementWrappedProps,
+} from "./preload/replaceElement";
 
 export const { DCGView } = Fragile;
 
@@ -17,8 +24,10 @@ type PropToFunc<T> = [T] extends [never]
       Assignable | ([Unassignable] extends [never] ? never : () => Unassignable)
     : never;
 
+export type PropOrConst<T> = T | PropToFunc<T>;
+
 export type OrConst<T> = {
-  [K in keyof T]: T[K] | PropToFunc<T[K]>;
+  [K in keyof T]: PropOrConst<T[K]>;
 };
 
 type ToFunc<T> = {
@@ -46,13 +55,15 @@ export interface MountedComponent {
   update: () => void;
 }
 
-abstract class IfComponent extends ClassComponent<{
+abstract class IfComponent<T> extends ClassComponent<{
   predicate: () => boolean;
+  children: () => T;
 }> {}
 
-abstract class ForComponent<T> extends ClassComponent<{
-  each: () => Array<T>;
-  key: (t: T) => string | number;
+abstract class ForComponent<T, U> extends ClassComponent<{
+  each: () => T[];
+  key: (elem: T) => string | number;
+  children: (elem: T) => U;
 }> {}
 
 export interface IfElseSecondParam {
@@ -69,8 +80,9 @@ abstract class InputComponent extends ClassComponent<{
 }> {}
 
 /** Switch expects one child which is a function returning a component */
-abstract class SwitchComponent extends ClassComponent<{
-  key: () => unknown;
+abstract class SwitchComponent<K, T> extends ClassComponent<{
+  key: () => K;
+  children: (key: K) => T;
 }> {}
 
 export interface DCGViewModule {
@@ -112,7 +124,7 @@ interface CommonProps {
   class?: () => string;
   didMount?: (elem: HTMLElement) => void;
   willUnmount?: () => void;
-  children?: ComponentChild[];
+  children?: unknown;
 }
 type WithCommonProps<T> = Omit<T, keyof CommonProps> & CommonProps;
 export interface ComponentTemplate extends Brand<"ComponentTemplate"> {}
@@ -146,8 +158,15 @@ declare global {
       button: any;
       br: any;
     }
+    interface ElementChildrenAttribute {
+      children: [];
+    }
   }
 }
+
+export type PropsChild<P> = "children" extends keyof P
+  ? WrapInArray<P["children"]>[number]
+  : ComponentChild;
 
 /**
  * If you know React, then you know DCGView.
@@ -172,22 +191,26 @@ declare global {
 
 export function jsx<Props extends GenericProps<Props>>(
   el: ComponentConstructor<Props>,
-  props: OrConst<Props>,
-  ...children: ComponentChild[]
-) {
+  props: OrConst<Omit<Props, "children">>,
+  ..._children: PropsChild<Props>[]
+): ComponentTemplate {
   // "Text should be a const or a getter:"
-  children = children.map((e) =>
-    typeof e === "string" ? DCGView.const(e) : e
+  const children = _children.map((e) =>
+    typeof e === "string" ? (DCGView.const(e) as PropToFunc<typeof e>) : e
   );
-  const fnProps = {} as any;
-  for (const k in props) {
-    // DCGView.createElement also expects 0-argument functions
-    if (typeof props[k] !== "function") {
-      fnProps[k] = DCGView.const(props[k]);
-    } else {
-      fnProps[k] = props[k] as (...args: any[]) => any;
-    }
-  }
+  const fnProps = Object.entries(props).reduce<Record<string, FunctionType>>(
+    (acc, [key, value]) => {
+      // DCGView.createElement also expects 0-argument functions
+      if (typeof value === "function") {
+        // unsafe, but we don't care about passing class constructors or other function-like values
+        acc[key] = value as FunctionType;
+      } else {
+        acc[key] = DCGView.const(value);
+      }
+      return acc;
+    },
+    {}
+  ) as CreateElementWrappedProps<Props>;
   fnProps.children = children.length === 1 ? children[0] : children;
   return createElementWrapped(el, fnProps);
 }
