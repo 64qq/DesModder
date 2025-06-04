@@ -74,10 +74,7 @@ export class JumpToDefinitionMenu extends Component<{
                   }
                   key={(e) => e[0].sourceExprIndex}
                 >
-                  {([e, i]: [
-                    JumpToDefinitionMenuInfo["idents"][number],
-                    number,
-                  ]) => (
+                  {([e, i]) => (
                     <li
                       onClick={() => {
                         this.props.jumpToDefinitionById(e.sourceExprId);
@@ -170,11 +167,8 @@ export class FormattedDocstring extends Component<{
   template() {
     return (
       <div style={{ display: "inline" }} class="dsm-intellisense-docstring">
-        <For
-          each={() => this.props.docstring().map((e, i) => [e, i] as const)}
-          key={() => counter++}
-        >
-          {([r, _]: [DocStringRenderable, number]) =>
+        <For each={() => this.props.docstring()} key={() => counter++}>
+          {(r) =>
             Match(() => r, {
               param: (r) => {
                 const ltx = () =>
@@ -269,7 +263,7 @@ export class PartialFunctionCallView extends Component<{
                     }
                     key={(e) => e[0]}
                   >
-                    {(p: [string, number]) => (
+                    {(p) => (
                       <div
                         class={() =>
                           this.props.partialFunctionCall()?.paramIndex === p[1]
@@ -368,10 +362,7 @@ export class View extends Component<{
               }
               key={(e) => e.idents[0].variableName}
             >
-              {(
-                ident: { idents: BoundIdentifier[] } & { index: number },
-                idx: () => number
-              ) => {
+              {(ident, idx) => {
                 const reformattedIdent = ident.idents[0].variableName;
 
                 const selected = () =>

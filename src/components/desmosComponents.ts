@@ -15,6 +15,7 @@ export abstract class CheckboxComponent extends ClassComponent<{
   small?: boolean;
   ariaLabel: string;
   onChange: (checked: boolean) => void;
+  children?: ComponentChild;
 }> {}
 
 export const { Checkbox } = Fragile;
@@ -143,12 +144,10 @@ export function Match<Disc extends { type: Key }, Key extends string>(
 ): ComponentTemplate {
   return createElementWrapped(Switch, {
     key: () => discriminant().type,
-    children: [
-      () => {
-        const d = discriminant();
-        return branches[d.type](d) as any;
-      },
-    ],
+    children: () => {
+      const d = discriminant();
+      return branches[d.type](d);
+    },
   });
 }
 
@@ -162,6 +161,7 @@ export const DStaticMathquillView = Fragile.StaticMathquillView;
 export abstract class TooltipComponent extends ClassComponent<{
   tooltip: string;
   gravity?: "n" | "e" | "s" | "w";
+  children?: ComponentChild;
 }> {}
 
 export const { Tooltip } = Fragile;
