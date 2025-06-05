@@ -128,7 +128,12 @@ interface CommonProps {
 }
 type WithCommonProps<T> = Omit<T, keyof CommonProps> & CommonProps;
 export interface ComponentTemplate extends Brand<"ComponentTemplate"> {}
-export type ComponentChild = ComponentTemplate | null | string | (() => string);
+export type ComponentChild =
+  | ComponentTemplate
+  | null
+  | undefined
+  | string
+  | (() => string);
 
 export const { Class: Component, mountToNode, unmountFromNode } = DCGView;
 
