@@ -2,7 +2,7 @@ import { Inserter, PluginController } from "../../plugins/PluginController";
 import { MenuFunc } from "./components/Menu";
 import PillboxContainer from "./components/PillboxContainer";
 import PillboxMenu from "./components/PillboxMenu";
-import { DCGView } from "#DCGView";
+import { ComponentTemplate, DCGView } from "#DCGView";
 import { plugins, PluginID, PluginConfigItemKey } from "#plugins/index.ts";
 import { createElementWrapped } from "../../preload/replaceElement";
 import { MergeUnion } from "#utils/utils.ts";
@@ -172,6 +172,5 @@ interface PillboxButton {
   tooltip: string;
   iconClass: string;
   pinned?: boolean;
-  // popup should return a JSX element. Not sure of type
-  popup: (c: PillboxMenus) => unknown;
+  popup: (c: PillboxMenus) => ComponentTemplate;
 }
