@@ -124,7 +124,6 @@ interface CommonProps {
   class?: () => string;
   didMount?: (elem: HTMLElement) => void;
   willUnmount?: () => void;
-  children?: unknown;
 }
 type WithCommonProps<T> = Omit<T, keyof CommonProps> & CommonProps;
 export interface ComponentTemplate extends Brand<"ComponentTemplate"> {}
