@@ -79,6 +79,6 @@ export class PerformanceView extends Component<{
   }
 }
 
-export function MainPopupFunc(pi: PerformanceInfo, dsm: DSM): PerformanceView {
+export function MainPopupFunc(pi: PerformanceInfo, dsm: DSM) {
   return <PerformanceView pi={() => pi} dsm={() => dsm} />;
 }
