@@ -181,6 +181,7 @@ export interface ExpressionModel
   clickableInfo?: BaseClickable;
   shouldGraph?: boolean;
   formula?: ExpressionFormula;
+  displayIndex: string;
 }
 
 interface TableColumn extends BasicSetExpression {
