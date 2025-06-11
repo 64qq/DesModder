@@ -53,8 +53,12 @@ export function testWithPage(
     timeout ?? 5000
   );
 }
+declare global {
+  // eslint-disable-next-line @typescript-eslint/naming-convention, no-var
+  var __BROWSER_GLOBAL__: Browser;
+}
 
-const browser = (globalThis as any).__BROWSER_GLOBAL__ as Browser;
+const browser = globalThis.__BROWSER_GLOBAL__;
 
 async function getPage() {
   const pages = await browser.pages();
