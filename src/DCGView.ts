@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type -- To represent empty props */
 import { Brand } from "#common/utils.ts";
 import { Fragile } from "#globals";
 import {
   FunctionType,
   PartitionByAssignability,
   WrapInArray,
+  Prettify,
+  ClassValue,
 } from "#utils/utils.ts";
 import {
   createElementWrapped,
@@ -36,13 +39,14 @@ type ToFunc<T> = {
 
 export abstract class ClassComponent<
   PropsType extends GenericProps<PropsType> = GenericProps,
+  Template = unknown,
 > {
   props!: ToFunc<PropsType>;
   children?: unknown;
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(_props: OrConst<PropsType>) {}
   init(): void {}
-  abstract template(): unknown;
+  abstract template(): Template;
   _element?:
     | { _domNode: HTMLElement }
     | {
@@ -121,12 +125,154 @@ export type GenericProps<Props extends BaseProps = BaseProps> = {
   [K in keyof Props]: Props[K];
 };
 interface CommonProps {
-  class?: () => string;
+  class?: () => ClassValue;
   didMount?: (elem: HTMLElement) => void;
   willUnmount?: () => void;
 }
 type WithCommonProps<T> = Omit<T, keyof CommonProps> & CommonProps;
-export interface ComponentTemplate extends Brand<"ComponentTemplate"> {}
+
+// eslint-disable-next-line  @typescript-eslint/consistent-type-definitions
+type NonNullish = {};
+type Nullish = null | undefined;
+type Unknown = Nullish | NonNullish;
+
+type MaybeArray<T> = T | T[];
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- invariance
+type ViewClassProps<ViewClass extends typeof ClassComponent<any>> =
+  ViewClass extends typeof ClassComponent<infer Props> ? Props : never;
+
+type FlattenedArrayValue<T> = T extends readonly unknown[]
+  ? FlattenedArrayValue<T[number]>
+  : T;
+type IsLeafAssignable<T, C> = T extends readonly unknown[]
+  ? false
+  : T extends C
+    ? true
+    : false;
+/**
+ * Flattens T recursively and filters the types that is assignable to C
+ */
+type FlattenAndFilter<T extends readonly unknown[], C> = T extends readonly []
+  ? []
+  : // Actually unnecessary, but improves performance and increases tuple size limits
+    IsLeafAssignable<T[number], C> extends true
+    ? T
+    : // case: [string, ...number[]]
+      // `extends Unknown[]` to prevent Tail from being `unknown[]` when the type inference fails
+      T extends readonly [infer Head, ...infer Tail extends Unknown[]]
+      ? Head extends readonly unknown[]
+        ? [...FlattenAndFilter<Head, C>, ...FlattenAndFilter<Tail, C>]
+        : Head extends C
+          ? [Head, ...FlattenAndFilter<Tail, C>]
+          : FlattenAndFilter<Tail, C>
+      : // case: [...string[], number]
+        T extends readonly [...infer Init extends Unknown[], infer Last]
+        ? Last extends readonly unknown[]
+          ? [...FlattenAndFilter<Init, C>, ...FlattenAndFilter<Last, C>]
+          : Last extends C
+            ? [...FlattenAndFilter<Init, C>, Last]
+            : FlattenAndFilter<Init, C>
+        : // case: string[]
+          Extract<FlattenedArrayValue<T>, C>[];
+
+type UnwrapChildren<
+  Children extends readonly unknown[],
+  IsViewClassProps extends boolean,
+  __Children extends readonly unknown[] = VariadicToDistributable<Children>,
+> = IsViewClassProps extends true
+  ? __Children extends []
+    ? undefined
+    : __Children extends [infer I]
+      ? I
+      : __Children
+  : Children;
+
+type VariadicToDistributable<T extends readonly unknown[]> = T extends T
+  ? number extends T["length"]
+    ? T extends readonly [infer Head, ...infer Tail]
+      ? [Head, ...VariadicToDistributable<Tail>]
+      : T extends readonly [...infer Init, infer Last]
+        ? [...VariadicToDistributable<Init>, Last]
+        : [] | [T[number]] | [T[number], T[number], ...T[number][]]
+    : T
+  : never;
+
+type PossiblyArrayTypeToDistributableDeep<T> = unknown extends T
+  ? Unknown | Unknown[]
+  : T extends readonly unknown[]
+    ? { [K in keyof T]: PossiblyArrayTypeToDistributableDeep<T[K]> }
+    : T extends FunctionType
+      ? T
+      : object extends Required<T>
+        ? T | Unknown[]
+        : T;
+
+/**
+ * Constructs normalized children by flattening and filtering non-nullish types (the same as `DCGView.createElement`).
+ *
+ * Non-array object types with one or more keys are not considered to be 'possibly array' types, which is unsound though.
+ */
+type FlattenAndFilterNonNullish<Children> = FlattenAndFilter<
+  PossiblyArrayTypeToDistributableDeep<[Children]>,
+  NonNullish
+>;
+
+type WithPreprocessedChildren<
+  Props,
+  IsViewClassProps extends boolean,
+> = Props extends Props
+  ? Prettify<
+      Omit<Props, "children"> & {
+        children: UnwrapChildren<
+          "children" extends keyof Props
+            ? FlattenAndFilterNonNullish<Props["children"]>
+            : NonNullish[],
+          IsViewClassProps
+        >;
+      }
+    >
+  : never;
+
+interface ComponentTemplateBase extends Brand<"ComponentTemplate"> {}
+export interface ComponentTemplateFlagment<
+  Children extends MaybeArray<ComponentChild> = MaybeArray<ComponentChild>,
+> extends ComponentTemplateBase {
+  isDCGElementSpec: true;
+  type: "fragment";
+  children: FlattenAndFilterNonNullish<Children>;
+}
+export interface ComponentTemplateWithTagName<
+  Tag extends keyof JSX.IntrinsicElements | (string & {}) = string,
+  Props extends CommonProps & {
+    children?: MaybeArray<ComponentChild>;
+  } & GenericProps = {},
+> extends ComponentTemplateBase {
+  isDCGElementSpec: true;
+  type: "element";
+  tagName: Tag;
+  props: WithPreprocessedChildren<Props, false>;
+}
+export interface ComponentTemplateWithViewClass<
+  ViewClass extends
+    typeof ClassComponent<GenericProps> = typeof ClassComponent<{}>,
+  Props extends CommonProps &
+    ViewClassProps<ViewClass> = ViewClassProps<ViewClass>,
+> extends ComponentTemplateBase {
+  isDCGElementSpec: true;
+  type: "view";
+  viewClass: ViewClass;
+  props: WithPreprocessedChildren<Props, true>;
+}
+export interface ComponentTemplateError extends ComponentTemplateBase {
+  children: undefined;
+}
+export type ComponentTemplate =
+  | ComponentTemplateFlagment
+  | ComponentTemplateWithTagName
+  | ComponentTemplateWithViewClass
+  | ComponentTemplateError;
+
 export type ComponentChild =
   | ComponentTemplate
   | null
@@ -140,7 +286,7 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicAttributes {
-      class?: string | Record<string, boolean>;
+      class?: ClassValue;
     }
     interface IntrinsicElements {
       div: any;

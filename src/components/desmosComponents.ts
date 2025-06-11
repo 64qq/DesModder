@@ -4,10 +4,15 @@ import {
   Component,
   ComponentChild,
   ComponentTemplate,
+  ComponentTemplateError,
+  ComponentTemplateFlagment,
+  ComponentTemplateWithTagName,
+  ComponentTemplateWithViewClass,
   DCGView,
 } from "#DCGView";
 import window, { CalcController, Fragile } from "#globals";
 import { createElementWrapped } from "../preload/replaceElement";
+import { WrapInArray } from "#utils/utils.ts";
 
 export abstract class CheckboxComponent extends ClassComponent<{
   checked: boolean;
@@ -166,11 +171,66 @@ export abstract class TooltipComponent extends ClassComponent<{
 
 export const { Tooltip } = Fragile;
 
+interface ExpressionViewComponentTemplate
+  extends ComponentTemplateWithTagName<
+    "div",
+    {
+      "expr-id": () => ExpressionModel["id"];
+      children: [
+        ComponentTemplateWithTagName<
+          "div",
+          {
+            class: () => "dcg-fade-container";
+            children: [
+              ComponentTemplateWithTagName<
+                "div",
+                {
+                  class: () => "dcg-main";
+                  children: [
+                    ComponentTemplateWithViewClass,
+                    ComponentTemplateWithViewClass,
+                  ];
+                }
+              >,
+              ComponentTemplateWithViewClass,
+              ComponentTemplateWithViewClass,
+            ];
+          }
+        >,
+        ComponentTemplateWithTagName<
+          "span",
+          {
+            children: [
+              ComponentTemplateWithTagName<
+                "span",
+                {
+                  class: () => "dcg-num";
+                  children: () => ExpressionModel["displayIndex"];
+                }
+              >,
+              ComponentTemplateWithTagName<
+                "div",
+                {
+                  class: () => "dcg-tab-interior dcg-action-icon-mouse";
+                  children: ComponentTemplateWithViewClass;
+                }
+              >,
+              ComponentTemplateWithViewClass,
+              ComponentTemplateWithViewClass,
+            ];
+          }
+        >,
+        ComponentTemplateWithViewClass,
+      ];
+    }
+  > {}
+
 export abstract class ExpressionViewComponent extends ClassComponent<
   ModelAndController & {
     onDragPending: () => void;
     isDragCopy: () => boolean;
-  }
+  },
+  ExpressionViewComponentTemplate
 > {}
 
 // `?` to avoid a crash if the replacement fails
@@ -189,8 +249,17 @@ interface ModelAndController {
   controller: CalcController;
 }
 
-function children(template: any) {
-  return listWrap(template.children ?? template.props.children);
+type Children<T extends ComponentTemplate> = T extends
+  | ComponentTemplateFlagment
+  | ComponentTemplateError
+  ? T["children"]
+  : T extends ComponentTemplateWithTagName | ComponentTemplateWithViewClass
+    ? T["props"]["children"]
+    : never;
+
+function children<T extends ComponentTemplate>(template: T) {
+  const { children } = "children" in template ? template : template.props;
+  return listWrap(children as Children<T>);
 }
 
 // <ExpressionIconView ... >
@@ -201,8 +270,8 @@ export class ExpressionIconView extends Component<ModelAndController> {
   }
 }
 
-function listWrap(x: unknown) {
-  return Array.isArray(x) ? x : [x];
+function listWrap<const T>(x: T) {
+  return [x].flat() as WrapInArray<T>;
 }
 
 // <If predicate={this.shouldShowFooter}>

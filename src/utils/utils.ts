@@ -10,9 +10,10 @@ export async function pollForValue<T>(func: () => T) {
   });
 }
 
-type ClassDict = Record<string, boolean>;
+export type ClassDict = Record<string, boolean>;
+export type ClassValue = string | ClassDict;
 
-export type MaybeClassDict = string | ClassDict | undefined | null;
+export type MaybeClassDict = ClassValue | undefined | null;
 
 function updateClass(out: ClassDict, c: MaybeClassDict) {
   // mutates `out`, returns nothing
