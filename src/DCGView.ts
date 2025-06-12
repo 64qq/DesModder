@@ -116,9 +116,9 @@ export interface DCGViewModule {
   unmountFromNode: (el: HTMLElement) => void;
 }
 
-export type ComponentConstructor<Props extends GenericProps<Props>> =
-  | string
-  | typeof ClassComponent<Props>;
+export type ComponentConstructor<
+  Props extends GenericProps<Props> = GenericProps,
+> = string | typeof ClassComponent<Props>;
 
 type BaseProps = Record<string, unknown>;
 export type GenericProps<Props extends BaseProps = BaseProps> = {
@@ -288,6 +288,7 @@ declare global {
     interface IntrinsicAttributes {
       class?: ClassValue;
     }
+    type ElementType = ComponentConstructor;
     interface IntrinsicElements {
       div: any;
       i: any;
