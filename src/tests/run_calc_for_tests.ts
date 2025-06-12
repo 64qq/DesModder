@@ -29,6 +29,7 @@ Object.defineProperty(window, 'matchMedia', {
 
 HTMLCanvasElement.prototype.getContext = () => ({
   scale: () => {}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 } as any)
 HTMLCanvasElement.prototype.toDataURL = () => ""
 HTMLMediaElement.prototype.play = async () => {
