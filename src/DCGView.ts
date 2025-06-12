@@ -95,10 +95,23 @@ export interface DCGViewModule {
     If: typeof IfComponent;
     Input: typeof InputComponent;
     Switch: typeof SwitchComponent;
-    SwitchUnion: <Key extends string>(
-      discriminant: () => Key,
-      branches: Record<Key, () => ComponentChild>
-    ) => ComponentTemplate;
+    SwitchUnion: {
+      <Key extends string>(
+        discriminant: () => Key,
+        branches: {
+          [K in Key]: (key: () => K) => ComponentChild;
+        }
+      ): ComponentTemplate;
+      <Disc extends Record<Key, PropertyKey>, Key extends string>(
+        discriminant: () => Disc,
+        key: Key,
+        branches: {
+          [K in Disc[Key]]: (
+            disc: () => Disc & Record<Key, K>
+          ) => ComponentChild;
+        }
+      ): ComponentTemplate;
+    };
     IfElse: (p: () => boolean, v: IfElseSecondParam) => ComponentTemplate;
   };
   Class: typeof ClassComponent;
