@@ -3,6 +3,8 @@ import { satisfiesType } from "#parsing/nodeTypes.ts";
 import { Identifier } from "#parsing/parsenode.ts";
 import traverse, { Path } from "#parsing/traverse.ts";
 import { parseDesmosLatex } from "#utils/depUtils.ts";
+import { MergeUnion } from "#utils/utils.ts";
+import { ItemState } from "graph-state/state";
 
 export const simpleKeys = [
   "latex",
@@ -47,6 +49,8 @@ export const nestedKeys = [
   "axisOffset",
 ] as const;
 
+type RootKey = (typeof rootKeys)[number];
+
 function replace(calc: Calc, replaceLatex: (s: string) => string) {
   // replaceString is applied to stuff like labels
   // middle group in regex accounts for 1 layer of braces, sufficient for `Print ${a+2}`
@@ -62,38 +66,31 @@ function replace(calc: Calc, replaceLatex: (s: string) => string) {
   if (ticker?.minStepLatex !== undefined) {
     ticker.minStepLatex = replaceLatex(ticker.minStepLatex);
   }
-  state.expressions.list.forEach((expr: any) => {
-    rootKeys.forEach((k) => {
-      if (k in expr) {
-        expr[k] = replaceLatex(expr[k]);
-      }
-    });
-    for (const sub of nestedKeyContainers) {
-      if (expr[sub]) {
-        nestedKeys.forEach((k) => {
-          if (k in expr[sub]) {
-            expr[sub][k] = replaceLatex(expr[sub][k]);
-          }
-        });
-      }
-    }
-    if (expr.label) {
-      expr.label = replaceString(expr.label);
-    }
-    if (expr.columns) {
-      expr.columns.forEach((col: any) => {
-        simpleKeys.forEach((k) => {
-          if (k in col) {
-            col[k] = replaceLatex(col[k]);
-          }
-        });
-        if (col.values) col.values = col.values.map(replaceLatex);
+  state.expressions.list.forEach(
+    (expr: MergeUnion<ItemState> & Partial<Record<RootKey, string>>) => {
+      rootKeys.forEach((k) => {
+        expr[k] &&= replaceLatex(expr[k]);
       });
+      for (const sub of nestedKeyContainers) {
+        const subExpr: MergeUnion<(typeof expr)[typeof sub]> = expr[sub];
+        if (subExpr) {
+          nestedKeys.forEach((k) => {
+            subExpr[k] &&= replaceLatex(subExpr[k]);
+          });
+        }
+      }
+      expr.label &&= replaceString(expr.label);
+      expr.columns?.forEach((col) => {
+        simpleKeys.forEach((k) => {
+          col[k] &&= replaceLatex(col[k]);
+        });
+        col.values &&= col.values.map(replaceLatex);
+      });
+      if (expr.clickableInfo?.latex) {
+        expr.clickableInfo.latex = replaceLatex(expr.clickableInfo.latex);
+      }
     }
-    if (expr.clickableInfo?.latex) {
-      expr.clickableInfo.latex = replaceLatex(expr.clickableInfo.latex);
-    }
-  });
+  );
   calc.setState(state, {
     allowUndo: true,
   });
