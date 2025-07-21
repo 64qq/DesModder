@@ -181,7 +181,7 @@ export class Driver {
   }
 
   async setPluginSetting(...args: Parameters<typeof DSM.setPluginSetting>) {
-    await this.evaluate(DSM.setPluginSetting.bind(DSM), ...args);
+    await this.evaluate((...args) => DSM.setPluginSetting(...args), ...args);
   }
 
   async waitForSync() {
