@@ -355,26 +355,25 @@ export type PropsChild<P> = "children" extends keyof P
 
 export function jsx<Props extends GenericProps<Props>>(
   el: ComponentConstructor<Props>,
-  props: OrConst<Omit<Props, "children">>,
+  props: OrConst<Omit<Props, "children">> | null,
   ..._children: PropsChild<Props>[]
 ): ComponentTemplate {
   // "Text should be a const or a getter:"
   const children = _children.map((e) =>
     typeof e === "string" ? (DCGView.const(e) as PropToFunc<typeof e>) : e
   );
-  const fnProps = Object.entries(props).reduce<Record<string, FunctionType>>(
-    (acc, [key, value]) => {
-      // DCGView.createElement also expects 0-argument functions
-      if (typeof value === "function") {
-        // unsafe, but we don't care about passing class constructors or other function-like values
-        acc[key] = value as FunctionType;
-      } else {
-        acc[key] = DCGView.const(value);
-      }
-      return acc;
-    },
-    {}
-  ) as CreateElementWrappedProps<Props>;
+  const fnProps = Object.entries(props ?? {}).reduce<
+    Record<string, FunctionType>
+  >((acc, [key, value]) => {
+    // DCGView.createElement also expects 0-argument functions
+    if (typeof value === "function") {
+      // unsafe, but we don't care about passing class constructors or other function-like values
+      acc[key] = value as FunctionType;
+    } else {
+      acc[key] = DCGView.const(value);
+    }
+    return acc;
+  }, {}) as CreateElementWrappedProps<Props>;
   fnProps.children = children.length === 1 ? children[0] : children;
   return createElementWrapped(el, fnProps);
 }
