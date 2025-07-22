@@ -33,7 +33,7 @@ export default class FindReplace extends PluginController {
     });
   }
 
-  replaceSearchView: Replacer = (searchBar: ComponentTemplate) => (
+  replaceSearchView: Replacer<ComponentTemplate> = (searchBar) => (
     <div class="dsm-find-replace-search-bar-container">
       {searchBar}
       <ReplaceBar fr={this} />
