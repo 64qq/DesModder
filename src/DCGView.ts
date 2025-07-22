@@ -66,8 +66,8 @@ abstract class IfComponent<T> extends ClassComponent<{
 
 abstract class ForComponent<T, U> extends ClassComponent<{
   each: () => T[];
-  key: (elem: T) => string | number;
-  children: (elem: T) => U;
+  key: (value: T, index: number, array: T[]) => string | number;
+  children: (item: () => T, index: () => number) => U;
 }> {}
 
 export interface IfElseSecondParam {

@@ -38,7 +38,7 @@ export class PillboxContainer extends Component<{
         }}
       >
         <For each={() => this.pm.pillboxButtonsOrder} key={(id) => id}>
-          {(getId: () => string) => (
+          {(getId) => (
             <PillboxButton
               buttonId={getId()}
               pm={this.pm}

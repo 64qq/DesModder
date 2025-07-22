@@ -74,12 +74,7 @@ export class JumpToDefinitionMenu extends Component<{
                   }
                   key={(e) => e[0].sourceExprIndex}
                 >
-                  {(
-                    getPair: () => [
-                      e: JumpToDefinitionMenuInfo["idents"][number],
-                      index: number,
-                    ]
-                  ) => (
+                  {(getPair) => (
                     <li
                       onClick={() => {
                         this.props.jumpToDefinitionById(
@@ -177,7 +172,7 @@ export class FormattedDocstring extends Component<{
     return (
       <div style={{ display: "inline" }} class="dsm-intellisense-docstring">
         <For each={() => this.props.docstring()} key={() => counter++}>
-          {(getRenderable: () => DocStringRenderable) =>
+          {(getRenderable) =>
             Match(getRenderable, {
               param: (r) => {
                 const ltx = () =>
@@ -272,7 +267,7 @@ export class PartialFunctionCallView extends Component<{
                     }
                     key={(e) => e[0]}
                   >
-                    {(getPair: () => [string, number]) => (
+                    {(getPair) => (
                       <div
                         class={() =>
                           this.props.partialFunctionCall()?.paramIndex ===

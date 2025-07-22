@@ -20,7 +20,7 @@ export class IndexFor<T> extends Component<{
         }}
         key={([e]) => this.props.key(e)}
       >
-        {(getPair: () => [T, () => number]) => {
+        {(getPair) => {
           const [elem, index] = getPair();
           return this.props?.children?.(elem, index);
         }}
