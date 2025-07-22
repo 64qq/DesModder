@@ -1,14 +1,15 @@
-export const configList = [
-  {
-    key: "magnification",
+import { defineConfig } from "#plugins/config.ts";
+
+export const configList = defineConfig<QuakeProSettings>()({
+  magnification: {
     type: "number",
     default: 3,
     min: 1,
     max: 30,
     step: 0.1,
   },
-] as const;
+});
 
-export interface Config {
+export interface QuakeProSettings {
   magnification: number;
 }

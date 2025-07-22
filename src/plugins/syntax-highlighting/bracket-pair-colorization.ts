@@ -1,4 +1,4 @@
-import { Config } from "./config";
+import { SyntaxHighlightingSettings } from "./config";
 
 // assumes valid input;
 function hex2rgb(hex: string) {
@@ -9,7 +9,9 @@ function hex2rgb(hex: string) {
   ] as const;
 }
 
-export function generateBracketPairColorizationCSS(settings: Config) {
+export function generateBracketPairColorizationCSS(
+  settings: SyntaxHighlightingSettings
+) {
   const {
     bracketPairColorizationColors: bpcColors,
     bpcColorInText: colorInText,

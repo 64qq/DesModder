@@ -1,7 +1,7 @@
 import { PluginController } from "../PluginController";
-import { Config, configList } from "./config";
+import { QuakeProSettings, configList } from "./config";
 
-export default class quakePro extends PluginController<Config> {
+export default class QuakePro extends PluginController<QuakeProSettings> {
   static id = "quake-pro" as const;
   static enabledByDefault = false;
   static config = configList;
