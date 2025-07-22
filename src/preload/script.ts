@@ -100,6 +100,7 @@ listenToMessageDown((message) => {
       pluginsForceDisabled: arrayToSet(message.pluginsForceDisabled),
       pluginsEnabled: message.pluginsEnabled,
       pluginSettings: message.pluginSettings,
+      panics: [],
     };
     // Helps with the case of replacements ran before initialization
     window.DSM = {

@@ -23,6 +23,7 @@ import { format } from "#i18n";
 import { drawGLesmosSketchToCtx } from "../plugins/GLesmos/drawGLesmosSketchToCtx";
 import { insertElement, replaceElement } from "../preload/replaceElement";
 import { Concrete, MergeUnion } from "#utils/utils.ts";
+import { Block } from "apply-replacements/parse";
 
 export const DesModderUtils = {
   format,
@@ -44,6 +45,7 @@ export interface DWindow extends Window {
     pluginsForceDisabled: Set<PluginID>;
     pluginsEnabled: Record<PluginID, boolean | undefined>;
     pluginSettings: Record<PluginID, OptionalGenericSettings>;
+    panics: Block[];
   };
   DesModderFragile: {
     ExpressionView: Concrete<typeof ExpressionViewComponent>;

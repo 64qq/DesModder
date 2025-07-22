@@ -81,6 +81,7 @@ function addPanickedPlugin(plugin: string) {
 
 export function addPanic(block: Block) {
   block.plugins.forEach(addPanickedPlugin);
+  window.DesModderPreload?.panics.push(block);
   const description = document.createElement("li");
   description.innerText = block.description;
   document

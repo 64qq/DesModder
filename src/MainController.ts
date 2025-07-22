@@ -16,6 +16,7 @@ import {
 } from "./plugins/config";
 import { postMessageUp, mapToRecord, recordToMap } from "#utils/messages.ts";
 import { MergeUnion } from "#utils/utils.ts";
+import { Block } from "apply-replacements/parse";
 
 // https://github.com/microsoft/TypeScript/issues/13948
 function record<const K extends PropertyKey, const V>(key: K, value: V) {
@@ -36,6 +37,7 @@ export default class DSM extends TransparentPlugins {
       (plugin) => [plugin.id, getDefaultConfig(plugin.id)] as const
     )
   ) as IDToPluginSettings;
+  panics: readonly Block[] = [];
 
   private readonly vanillaHandleAction: (evt: DispatchedEvent) => void;
   private readonly vanillaUpdateTheComputedWorld: () => void;
@@ -117,6 +119,7 @@ export default class DSM extends TransparentPlugins {
     const dsmPreload = window.DesModderPreload!;
     this.applyStoredSettings(recordToMap(dsmPreload.pluginSettings));
     this.applyStoredEnabled(recordToMap(dsmPreload.pluginsEnabled));
+    this.panics = dsmPreload.panics;
     delete window.DesModderPreload;
 
     // Enable core plugins
