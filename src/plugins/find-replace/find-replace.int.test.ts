@@ -15,7 +15,7 @@ describe("Find-replace", () => {
       type: "open-expression-search",
       rename: false,
       latex: "",
-    } as any);
+    });
 
     // Specify replacement
     await driver.click(".dcg-expression-search-bar .dcg-math-field");

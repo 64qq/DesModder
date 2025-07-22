@@ -12,7 +12,6 @@ export type VanillaDispatchedEvent =
       type:
         | "close-item-settings-menu"
         | "close-graph-settings"
-        | "open-expression-search"
         | "close-expression-search"
         | "toggle-ticker"
         | "re-randomize"
@@ -130,6 +129,11 @@ export type VanillaDispatchedEvent =
   | {
       type: "toast/show";
       toast: Toast;
+    }
+  | {
+      type: "open-expression-search";
+      rename?: boolean;
+      latex: string;
     }
   | { type: "set-folder-collapsed"; id: string; isCollapsed: boolean }
   | { type: "set-item-colorLatex"; id: string; colorLatex: string }
