@@ -15,17 +15,21 @@ import {
 
 export const { DCGView } = Fragile;
 
+type IsStrictSupertype<T, U> = T extends U ? false : U extends T ? true : false;
+
 type PropToFunc<T> = [T] extends [never]
   ? never
-  : PartitionByAssignability<T, FunctionType> extends {
-        assignable: infer Assignable;
-        unassignable: infer Unassignable;
-      }
-    ? // Merges the return types of ToFunc'd union constituents while preserving those that are already functions.
-      // `type PropToFunc<T> = T extends FunctionType ? T : () => T` causes assignability issues;
-      // e.g. `(() => true) | (() => false)` is a subtype of `() => boolean`, but not vice versa (consider a function that randomly returns true or false).
-      Assignable | ([Unassignable] extends [never] ? never : () => Unassignable)
-    : never;
+  : IsStrictSupertype<T, FunctionType> extends true
+    ? FunctionType
+    : PartitionByAssignability<T, FunctionType> extends {
+          assignable: infer A;
+          unassignable: infer U;
+        }
+      ? // Merges the return types of ToFunc'd union constituents while preserving those that are already functions.
+        // `type PropToFunc<T> = T extends FunctionType ? T : () => T` causes assignability issues;
+        // e.g. `(() => true) | (() => false)` is a subtype of `() => boolean`, but not vice versa (consider a function that randomly returns true or false).
+        A | ([U] extends [never] ? never : () => U)
+      : never;
 
 export type PropOrConst<T> = T | PropToFunc<T>;
 
@@ -360,8 +364,8 @@ export function jsx<Props extends GenericProps<Props>>(
 ): ComponentTemplate {
   // "Text should be a const or a getter:"
   const children = _children.map((e) =>
-    typeof e === "string" ? (DCGView.const(e) as PropToFunc<typeof e>) : e
-  );
+    typeof e === "string" ? DCGView.const(e) : e
+  ) as PropOrConst<PropsChild<Props>>[];
   const fnProps = Object.entries(props ?? {}).reduce<
     Record<string, FunctionType>
   >((acc, [key, value]) => {
