@@ -3,18 +3,101 @@ import { Command, Block } from "./parse";
 import { PatternToken, patternTokens } from "./tokenize";
 import jsTokens, { Token } from "js-tokens";
 
-export interface ReplacementResult {
+interface ReplacementResult {
   successful: Set<Block>;
+  /** Map from `Block` to `string` error message. */
   failed: Map<Block, string>;
   value: string;
 }
 
+export interface FullReplacementResult {
+  newCode: string;
+  blockFailures: [block: Block, errorMsg: string][];
+  otherErrors: string[];
+}
+
+export function fullReplacement(
+  calcDesktop: string,
+  enabledReplacements: Block[]
+): FullReplacementResult {
+  const tokens = Array.from(jsTokens(calcDesktop));
+  const sharedModuleTokens = tokens.filter(
+    (x) =>
+      x.type === "StringLiteral" &&
+      x.value.length > 200000 &&
+      // JS is sure to have &&. Protects against translations getting longer
+      // than the length cutoff, which is intentionally low in case of huge
+      // improvements in minification.
+      x.value.includes("&&")
+  );
+  let workerResult: ReplacementResult;
+  const otherErrors = [];
+  if (sharedModuleTokens.length !== 1) {
+    otherErrors.push(
+      "More than one large JS string found, which is the shared module?"
+    );
+    // no-op
+    workerResult = {
+      successful: new Set(),
+      failed: new Map(
+        enabledReplacements.map(
+          (b) =>
+            [b, `Not reached: ${b.heading}. Maybe no worker builder?`] as const
+        )
+      ),
+      value: calcDesktop,
+    };
+  } else {
+    const [sharedModuleToken] = sharedModuleTokens;
+    workerResult = applyReplacements(
+      enabledReplacements.filter((x) => x.workerOnly),
+      // JSON.parse doesn't work because this is a single-quoted string.
+      // js-tokens tokenized this as a string anyway, so it should be
+      // safely eval'able to a string.
+      // eslint-disable-next-line no-eval
+      (0, eval)(sharedModuleToken.value) as string
+    );
+    sharedModuleToken.value = JSON.stringify(workerResult.value);
+  }
+  const wbTokenHead = tokens.find(
+    (x) =>
+      x.type === "NoSubstitutionTemplate" &&
+      x.value.includes("const __dcg_worker_module__ =")
+  );
+  const wbTokenTail = tokens.find(
+    (x) =>
+      x.type === "TemplateTail" &&
+      x.value.includes(
+        "__dcg_worker_module__(__dcg_worker_shared_module_exports__);"
+      )
+  );
+  if (wbTokenTail === undefined || wbTokenHead === undefined) {
+    otherErrors.push("Failed to find valid worker builder.");
+  } else {
+    wbTokenHead.value =
+      // eslint-disable-next-line no-template-curly-in-string
+      "`function loadDesModderWorker(){${window.dsm_workerAppend}}" +
+      wbTokenHead.value.slice(1);
+    wbTokenTail.value =
+      wbTokenTail.value.slice(0, -1) + "\n loadDesModderWorker();`";
+  }
+  const srcWithWorkerAppend = tokens.map((x) => x.value).join("");
+  const mainResult = applyReplacements(
+    enabledReplacements.filter((x) => !x.workerOnly),
+    srcWithWorkerAppend
+  );
+  const blockFailures = [...workerResult.failed].concat([...mainResult.failed]);
+
+  return {
+    newCode: mainResult.value,
+    blockFailures,
+    otherErrors,
+  };
+}
+
 /** Apply a list of replacements to a source file. The main return is the .value,
  * We keep track of .failed and .successful */
-export function applyReplacements(
-  repls: Block[],
-  file: string
-): ReplacementResult {
+function applyReplacements(repls: Block[], file: string): ReplacementResult {
   const replaced = applyStringReplacements(repls, Array.from(jsTokens(file)));
   return { ...replaced, value: replaced.value.map((t) => t.value).join("") };
 }
@@ -100,7 +183,10 @@ function getSymbols(commands: Command[], str: Token[]): SymbolTable {
         const inside = command.args[0]
           ? table.getRequired(command.args[0])
           : { start: 0, length: table.str.length };
-        const found = findPattern(command.patternArg, table.str, inside, false);
+        const found = findPattern(command.patternArg, table.str, inside, {
+          allowDuplicates: false,
+          table,
+        });
         table.merge(found.newBindings);
         if (command.returns)
           table.set(command.returns, {
@@ -128,7 +214,7 @@ function getSymbols(commands: Command[], str: Token[]): SymbolTable {
           patternTokens("template() {__return__}", ""),
           table.str,
           { start: ts, length: table.str.length - ts - 1 },
-          true
+          { allowDuplicates: true, table: new SymbolTable(str) }
         );
         table.set(command.returns, {
           start: found.startIndex,
@@ -206,6 +292,23 @@ function applyStringReplacements(
   };
 }
 
+function isVariablePattern(token: PatternToken) {
+  return (
+    token.type === "PatternBalanced" ||
+    token.type === "PatternBalancedNonGreedy" ||
+    token.type === "PatternIdentifier" ||
+    token.type === "PatternIdentifierDot"
+  );
+}
+
+/** Is the token a pattern that can be arbitrarily long? */
+function isLongPattern(token: PatternToken) {
+  return (
+    token.type === "PatternBalanced" ||
+    token.type === "PatternBalancedNonGreedy"
+  );
+}
+
 function blockReplacements(
   r: Block,
   getPrefix: (r: Block) => string,
@@ -227,18 +330,14 @@ function blockReplacements(
       );
     // skipFirst = this is just an append
     const skipFirst =
-      (command.patternArg[0].type === "PatternBalanced" ||
-        command.patternArg[0].type === "PatternIdentifier") &&
+      isVariablePattern(command.patternArg[0]) &&
       symbolName(command.patternArg[0].value) === symbolName(command.args[0]);
     const from = table.getRequired(prefix + command.args[0]);
     const res: Replacement = {
       heading: r.heading,
       from: skipFirst ? { start: from.start + from.length, length: 0 } : from,
       to: command.patternArg.slice(skipFirst ? 1 : 0).flatMap((token) => {
-        if (
-          token.type === "PatternBalanced" ||
-          token.type === "PatternIdentifier"
-        ) {
+        if (isVariablePattern(token)) {
           return table.getSlice(prefix + token.value);
         } else return token;
       }),
@@ -293,7 +392,7 @@ function findPattern(
   pattern: PatternToken[],
   str: Token[],
   inside: Range,
-  allowDuplicates: boolean
+  { allowDuplicates, table }: { allowDuplicates: boolean; table: SymbolTable }
 ): MatchResult {
   const fullPattern = pattern;
   // filter whitespace out of pattern
@@ -305,7 +404,7 @@ function findPattern(
   if (fixedToken === undefined)
     throw new Error("Pattern Error: No fixed token found");
   const fixedTokenIdx = pattern.indexOf(fixedToken);
-  if (pattern.slice(0, fixedTokenIdx).some((x) => x.type === "PatternBalanced"))
+  if (pattern.slice(0, fixedTokenIdx).some(isLongPattern))
     throw new Error("First fixed token is after a variable-width span.");
 
   // search time!
@@ -317,16 +416,23 @@ function findPattern(
       continue;
     }
     const match =
-      patternMatch(pattern, str, i, inside, false) !== null
-        ? patternMatch(pattern, str, i, inside, true)
+      patternMatch(pattern, str, i, inside, table, false) !== null
+        ? patternMatch(pattern, str, i, inside, table, true)
         : null;
     if (match !== null) {
       if (allowDuplicates) return match;
       if (found !== null)
         throw new ReplacementError(
-          `Duplicate pattern match at ${match.startIndex} with length ${match.length}: \n` +
+          `Duplicate pattern match.\n` +
+            `Pattern: ${fullPattern.map((v) => v.value).join("")} \n` +
+            `\nNew match at ${match.startIndex} with length ${match.length}: \n` +
             str
               .slice(match.startIndex, match.startIndex + match.length)
+              .map((v) => v.value)
+              .join("") +
+            `\n\nOld match at ${found.startIndex} with length ${found.length}: \n` +
+            str
+              .slice(found.startIndex, found.startIndex + found.length)
               .map((v) => v.value)
               .join("")
         );
@@ -343,27 +449,74 @@ function findPattern(
       type?: never;
       value: string;
     }
-    throw new Error(
+    const msg =
       `Pattern not found: ${fullPattern.map((v) => v.value).join("")} ` +
-        `in {start: ${s}, length: ${len}}\n` +
-        (str as Array<Token | TokenLike>)
-          .slice(s, s + 20)
-          .concat({ value: " … " })
-          .concat(str.slice(s + len - 20, s + len))
-          .filter((v) => v.type !== "MultiLineComment")
-          .map((v) => (v.value.length < 100 ? v.value : "[long token]"))
-          .join("")
-          .replace(/\n{2,}/g, "\n")
-    );
+      `in {start: ${s}, length: ${len}}\n` +
+      (str as Array<Token | TokenLike>)
+        .slice(s, s + 20)
+        .concat({ value: " … " })
+        .concat(str.slice(s + len - 20, s + len))
+        .filter((v) => v.type !== "MultiLineComment")
+        .map((v) => (v.value.length < 100 ? v.value : "[long token]"))
+        .join("")
+        .replace(/\n{2,}/g, "\n");
+    (window as any).DSM_panics ??= [];
+    (window as any).DSM_panics.push(msg);
+    throw new Error(msg);
   }
   return found;
 }
+
+const DOT: Token = { type: "Punctuator", value: "." };
+
+class PatternQueue {
+  /** We yield from index 0 onwards in the pattern, indexed by patternIndex. */
+  private readonly pattern: PatternToken[];
+  /** patternIndex points to the next entry yielded. */
+  private patternIndex: number = 0;
+  /** We pop from the end of the stack and should never add to it when nonempty. */
+  private bonusStack: Token[] = [];
+
+  constructor(pattern: PatternToken[]) {
+    this.pattern = pattern;
+  }
+
+  next(): PatternToken | undefined {
+    if (this.bonusStack.length) return this.bonusStack.pop();
+    const ret = this.pattern[this.patternIndex];
+    this.patternIndex++;
+    return ret;
+  }
+
+  peek(): PatternToken | undefined {
+    if (this.bonusStack.length) return this.bonusStack.at(-1);
+    const ret = this.pattern[this.patternIndex];
+    return ret;
+  }
+
+  queueTokens(tokens: Token[]) {
+    if (this.bonusStack.length) {
+      // This will never be reached because the bonus stack doesn't have any
+      // patterns on it, so it cannot do any backreference table lookups.
+      throw new Error("Cannot queue more tokens when some are already queued.");
+    }
+    this.bonusStack = [...tokens].reverse();
+  }
+
+  isAtStart() {
+    return this.patternIndex === 0;
+  }
+}
+
+const closeBraces = new Set([")", "]", "}"]);
+const openBraces = new Set(["(", "[", "{"]);
 
 function patternMatch(
   pattern: PatternToken[],
   str: Token[],
   startIndex: number,
   inside: Range,
+  outerTable: SymbolTable,
   doTable: true
 ): MatchResult | null;
 function patternMatch(
@@ -371,6 +524,7 @@ function patternMatch(
   str: Token[],
   startIndex: number,
   inside: Range,
+  outerTable: SymbolTable,
   doTable: false
 ): true | null;
 function patternMatch(
@@ -378,39 +532,57 @@ function patternMatch(
   str: Token[],
   startIndex: number,
   inside: Range,
+  outerTable: SymbolTable,
+  /**
+   * doTable is a performance optimization added in
+   * https://github.com/DesModder/DesModder/pull/482/commits/9e3cd674a1911f15cd5fe4cacabe978accc0d43a.
+   * It saves about 500ms on a 3000ms fullReplacementCached run, by not
+   * touching the SymbolTable at all unless the pattern matches when treating
+   * the PatternIdentifiers as globs. We run once with doTable=false
+   * then only run doTable=true if that passes. I'm somewhat surprised it's that
+   * significant of a gain though.
+   */
   doTable: boolean
 ): MatchResult | true | null {
   let table: SymbolTable | null = null;
   if (doTable) table = new SymbolTable(str);
-  let patternIndex = 0;
   let strIndex = startIndex;
-  while (patternIndex < pattern.length) {
-    let expectedToken = pattern[patternIndex];
-    // If a pattern identifier appears twice, then use the old value
-    // e.g. `$DCGView.createElement('div', {class: $DCGView.const`
+  const patternQueue = new PatternQueue(pattern);
+  let expectedToken = patternQueue.next();
+  while (expectedToken !== undefined) {
+    if (
+      (expectedToken.type === "PatternIdentifier" ||
+        expectedToken.type === "PatternIdentifierDot") &&
+      outerTable.has(expectedToken.value)
+    ) {
+      // A previous *Find* block matched this pattern identifier, so use that instead.
+      const currValue = outerTable.getSlice(expectedToken.value);
+      patternQueue.queueTokens(currValue);
+      expectedToken = patternQueue.next();
+      continue;
+    }
     if (
       doTable &&
-      expectedToken.type === "PatternIdentifier" &&
+      (expectedToken.type === "PatternIdentifierDot" ||
+        expectedToken.type === "PatternIdentifier") &&
       table!.has(expectedToken.value)
     ) {
+      // A pattern identifier appears twice, then use the old value
+      // e.g. `{ class: $$const("dcg-popover-interior"), role: $$const("region") }`
       const currValue = table!.getSlice(expectedToken.value);
-      if (currValue.length !== 1 || currValue[0].type !== "IdentifierName")
-        throw new ReplacementError(
-          `Identifier pattern ${expectedToken.value} already bound to a non-identifier`
-        );
-      [expectedToken] = currValue;
+      patternQueue.queueTokens(currValue);
+      expectedToken = patternQueue.next();
+      continue;
     }
     const foundToken = str[strIndex];
     if (foundToken === undefined) return null;
     // whitespace is already filtered out of pattern
     // ignore whitespace in str, except at the start of a match
-    if (isIgnoredWhitespace(foundToken) && patternIndex > 0) {
+    if (isIgnoredWhitespace(foundToken) && !patternQueue.isAtStart()) {
       strIndex++;
       continue;
     }
     if (expectedToken.type === "PatternBalanced") {
-      const closeBraces = new Set([")", "]", "}"]);
-      const openBraces = new Set(["(", "[", "{"]);
       // Scan right, keeping track of nested depth
       let depth = 1;
       let currIndex = strIndex - 1;
@@ -429,14 +601,68 @@ function patternMatch(
       // while loop stops when currIndex points to the matching close brace
       // but patternIndex points to the <balanced> before it, so subtract 1
       strIndex = currIndex - 1;
+    } else if (expectedToken.type === "PatternBalancedNonGreedy") {
+      // Scan right, keeping track of nested depth
+      let depth = 1;
+      let currIndex = strIndex - 1;
+      const nextPattern = patternQueue.peek();
+      if (!nextPattern) {
+        throw new Error(
+          `Non-greedy pattern ${expectedToken.value} cannot be the final pattern token.`
+        );
+      }
+      if (isVariablePattern(nextPattern)) {
+        throw new Error(
+          `Variable pattern token '${nextPattern.value}' cannot follow non-greedy pattern token ${expectedToken.value}.`
+        );
+      }
+      while (depth > 0) {
+        currIndex++;
+        const curr = str[currIndex].value;
+        if (closeBraces.has(curr)) depth--;
+        else if (openBraces.has(curr)) depth++;
+
+        if (depth === 1 && tokensEqual(nextPattern, str[currIndex])) {
+          // Non-backtracking match.
+          break;
+        }
+      }
+      // done scanning: currIndex points to a close brace in `str`,
+      // (or to something matching the next pattern token)
+      if (doTable)
+        table!.set(expectedToken.value, {
+          start: strIndex,
+          length: currIndex - strIndex,
+        });
+      // while loop stops when currIndex points to the matching close brace
+      // (or to something matching the next pattern token),
+      // but patternIndex points to the <balanced> before it, so subtract 1
+      strIndex = currIndex - 1;
     } else if (expectedToken.type === "PatternIdentifier") {
       if (foundToken.type !== "IdentifierName") return null;
       if (doTable)
         table!.set(expectedToken.value, { start: strIndex, length: 1 });
+    } else if (expectedToken.type === "PatternIdentifierDot") {
+      if (foundToken.type !== "IdentifierName") return null;
+      const startStrIndex = strIndex;
+      // Enter loop with strIndex pointing to an identifier.
+      while (
+        str[strIndex + 1] &&
+        tokensEqual(str[strIndex + 1], DOT) &&
+        str[strIndex + 2]
+      ) {
+        strIndex += 2;
+        if (foundToken.type !== "IdentifierName") return null;
+      }
+      if (doTable)
+        table!.set(expectedToken.value, {
+          start: startStrIndex,
+          length: strIndex - startStrIndex + 1,
+        });
     } else if (!tokensEqual(expectedToken, foundToken)) {
       return null;
     }
-    patternIndex++;
+    expectedToken = patternQueue.next();
     strIndex++;
     if (strIndex > inside.start + inside.length) return null;
   }

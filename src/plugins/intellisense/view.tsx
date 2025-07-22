@@ -74,17 +74,26 @@ export class JumpToDefinitionMenu extends Component<{
                   }
                   key={(e) => e[0].sourceExprIndex}
                 >
-                  {([e, i]) => (
+                  {(
+                    getPair: () => [
+                      e: JumpToDefinitionMenuInfo["idents"][number],
+                      index: number,
+                    ]
+                  ) => (
                     <li
                       onClick={() => {
-                        this.props.jumpToDefinitionById(e.sourceExprId);
+                        this.props.jumpToDefinitionById(
+                          getPair()[0].sourceExprId
+                        );
                       }}
                       class={() =>
-                        i === this.props.jumpToDefIndex() ? "selected" : ""
+                        getPair()[1] === this.props.jumpToDefIndex()
+                          ? "selected"
+                          : ""
                       }
                     >
                       <DStaticMathquillView
-                        latex={() => e.sourceExprLatex}
+                        latex={() => getPair()[0].sourceExprLatex}
                         config={{}}
                       ></DStaticMathquillView>
                     </li>
@@ -168,8 +177,8 @@ export class FormattedDocstring extends Component<{
     return (
       <div style={{ display: "inline" }} class="dsm-intellisense-docstring">
         <For each={() => this.props.docstring()} key={() => counter++}>
-          {(r) =>
-            Match(() => r, {
+          {(getRenderable: () => DocStringRenderable) =>
+            Match(getRenderable, {
               param: (r) => {
                 const ltx = () =>
                   textModeExprToLatex(this.props.cfg(), r.latex) ?? r.latex;
@@ -263,10 +272,11 @@ export class PartialFunctionCallView extends Component<{
                     }
                     key={(e) => e[0]}
                   >
-                    {(p) => (
+                    {(getPair: () => [string, number]) => (
                       <div
                         class={() =>
-                          this.props.partialFunctionCall()?.paramIndex === p[1]
+                          this.props.partialFunctionCall()?.paramIndex ===
+                          getPair()[1]
                             ? "pfc-param-selected"
                             : "pfc-param"
                         }
@@ -276,9 +286,9 @@ export class PartialFunctionCallView extends Component<{
                           latex={() =>
                             identifierStringToLatexString(
                               this.props.cfg(),
-                              p[0]
+                              getPair()[0]
                             ) +
-                            (p[1] ===
+                            (getPair()[1] ===
                             (this.props.partialFunctionCallIdent()?.params
                               ?.length ?? 0) -
                               1

@@ -1,7 +1,8 @@
 import * as moo from "#moo";
 import { Brand } from "#common/utils";
 import { ProgramAnalysis } from "../ProgramAnalysis";
-import TextAST, {
+import { TextAST } from "..";
+import {
   Node,
   Expression,
   isExpression,

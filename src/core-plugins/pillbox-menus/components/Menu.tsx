@@ -67,6 +67,7 @@ const categoryPlugins: Record<string, PluginID[]> = {
     "compact-view",
     "multiline",
     "syntax-highlighting",
+    "quake-pro",
   ],
   integrations: ["wakatime"],
 };
@@ -117,7 +118,9 @@ export default class Menu extends Component<{
               {() => (
                 <div class="dsm-category-container">
                   <For each={() => categoryPlugins[category]} key={(id) => id}>
-                    {(pluginID) => this.plugin(plugins.get(pluginID)!)}
+                    {(getPluginID: () => PluginID) =>
+                      this.plugin(plugins.get(getPluginID())!)
+                    }
                   </For>
                 </div>
               )}
@@ -269,16 +272,16 @@ function colorListOption(
                   each={() => settings[item.key].map((e, i) => [e, i] as const)}
                   key={([e, i]) => `${e}:${i}`}
                 >
-                  {([v, i]) => (
+                  {(getPair: () => [value: string, index: number]) => (
                     <div class="dsm-settings-color-list-item-container">
                       <input
                         type="color"
-                        value={v}
+                        value={getPair()[0]}
                         onChange={(e: InputEvent) => {
                           const newValue = (e.target as HTMLInputElement).value;
                           setValue(
                             settings[item.key].map((e, j) =>
-                              j === i ? newValue : e
+                              j === getPair()[1] ? newValue : e
                             )
                           );
                         }}
@@ -287,16 +290,18 @@ function colorListOption(
                         <IconButton
                           onTap={() => {
                             setValue([
-                              ...value().slice(0, i + 1),
+                              ...value().slice(0, getPair()[1] + 1),
                               "#FF0000",
-                              ...value().slice(i + 1),
+                              ...value().slice(getPair()[1] + 1),
                             ]);
                           }}
                           iconClass={"dcg-icon-plus"}
                         ></IconButton>
                         <IconButton
                           onTap={() => {
-                            setValue(value().filter((_, j) => j !== i));
+                            setValue(
+                              value().filter((_, j) => j !== getPair()[1])
+                            );
                           }}
                           iconClass={"dcg-icon-remove"}
                         ></IconButton>

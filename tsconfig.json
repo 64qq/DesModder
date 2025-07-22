@@ -15,6 +15,7 @@
     { "path": "./localization" },
     { "path": "./parsing" },
     { "path": "./common" },
-    { "path": "./src" }
+    { "path": "./src" },
+    { "path": "./apply-replacements" }
   ]
 }

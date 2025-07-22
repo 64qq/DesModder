@@ -2,44 +2,6 @@
 
 *plugin* `better-evaluation-view`
 
-## Show undefineds: JSX consumer
-
-*Description* `Show NaN, -∞, and +∞`
-
-*Find* => `undefined`
-```js
-undefined: ()=> $createElement(
-  $ViewClass,
-  {
-    ...this.props,
-    content: () => this.controller.s("shared-calculator-label-undefined")
-  }
-)
-```
-
-*Replace* `undefined` with
-```js
-undefined: () => DSM.replaceElement(
-  () => $createElement(
-    $ViewClass,
-    {
-      ...this.props,
-      content: () => this.controller.s("shared-calculator-label-undefined")
-    }
-  ),
-  () =>
-    DSM.betterEvaluationView
-      ? $createElement(
-          Desmos.Private.Fragile.StaticMathquillView,
-          {
-            latex: () => this.getNumberLabelString?.() || "undefined",
-            config: {}
-          }
-        )
-      : undefined
-)
-```
-
 ## Show list elements: JSX consumer
 
 *Description* `Show list elements`
@@ -56,19 +18,13 @@ list: $rhs => $createElement(__oldList__)
 () => this.cachedEvaluationRHS, "type", {
 "list-count": $listCountRhs => DSM.replaceElement(
   () => $listCountCreateElement(__oldListCount__),
-  () => DSM.betterEvaluationView?.listEvaluation(() => {
-    const itemModel = this.controller.getItemModel(this.props.id());
-    // get untruncated value
-    return itemModel.formula.typed_constant_value;
-  })
+  () => DSM.betterEvaluationView?.evaluation(DSM.betterEvaluationView?.getTypedConstantValue.bind(this)),
+  () => DSM.betterEvaluationView?.evaluationUpdateKey(this)
 ),
 list: $rhs => DSM.replaceElement(
   () => $createElement(__oldList__),
-  () => DSM.betterEvaluationView?.listEvaluation(() => {
-    const itemModel = this.controller.getItemModel(this.props.id());
-    // get untruncated value
-    return itemModel.formula.typed_constant_value;
-  })
+  () => DSM.betterEvaluationView?.evaluation(DSM.betterEvaluationView?.getTypedConstantValue.bind(this)),
+  () => DSM.betterEvaluationView?.evaluationUpdateKey(this)
 )
 ```
 
@@ -81,10 +37,8 @@ emptyList: () => $emptyListCreateElement(__oldEmptyList__)
 ```js
 emptyList: () => DSM.replaceElement(
   () => $emptyListCreateElement(__oldEmptyList__),
-  () => DSM.betterEvaluationView?.listEvaluation(() => {
-    const itemModel = this.controller.getItemModel(this.props.id());
-    return itemModel.formula.typed_constant_value;
-  })
+  () => DSM.betterEvaluationView?.evaluation(DSM.betterEvaluationView?.getTypedConstantValue.bind(this)),
+  () => DSM.betterEvaluationView?.evaluationUpdateKey(this)
 )
 ```
 
@@ -101,13 +55,16 @@ rgbcolor: $rhs => $createElement(__swatch__)
 ```js
 rgbcolor: $rhs => DSM.replaceElement(
   () => $createElement(__swatch__),
-  () => DSM.betterEvaluationView?.colorEvaluation(() => this.getEvaluationRHS().val)
+  () => DSM.betterEvaluationView?.evaluation(DSM.betterEvaluationView?.getTypedConstantValue.bind(this)),
+  () => DSM.betterEvaluationView?.evaluationUpdateKey(this)
 )
 ```
 
 ## Distinguish undefineds in numericLabels
 
 *Description* `Distinguish NaN vs -∞ vs +∞ vs complex`
+
+Needs 'worker_only' because this goes into the `shared_module_source`
 
 *worker_only*
 
@@ -118,28 +75,23 @@ Add a value field to "undefined" labels
 if (isNaN($val) || !isFinite($val)) return { type: "undefined" }
 ```
 
-Format complex numbers nicely
-
-*Find*
-```js
-complexNumberLabel: () => $complexNumberLabel,
-```
-
 *Replace* `undefined` with
 ```js
-if (isNaN($val) || !isFinite($val))
+if (isNaN($val) || !isFinite($val)) {
+  if (!DSM.betterEvaluationView?.settings.floats) {
+    return { type: "undefined" };
+  }
   return {
     type: "decimal",
-    value: Array.isArray($val) && $val.length == 2
-      ? $complexNumberLabel($val, {digits: 5})
-      : isNaN($val)
+    value: isNaN($val)
       ? "\\mathrm{NaN}"
       : $val === Infinity
-      ? "\\infty"
+      ? "\\infty{}"
       : $val === -Infinity
-      ? "-\\infty"
-      : "undefined",
+      ? "-\\infty{}"
+      : "undefined"
   };
+}
 ```
 
 ## Distinguish between 0 and -0 in numericLabels
@@ -160,7 +112,7 @@ if ($val === 0 || Math.abs($val) < $zeroCutoff)
 *Replace* `zero` with
 ```js
 if ($val === 0) {
-  if (!DSM.betterEvaluationView || Object.is($val, 0)) {
+  if (!DSM.betterEvaluationView?.settings.floats || Object.is($val, 0)) {
     return {
       type: "decimal",
       value: "0"
@@ -172,7 +124,7 @@ if ($val === 0) {
     }
   }
 } else if ($zeroCutoff && Math.abs($val) < $zeroCutoff) {
-  if (!DSM.betterEvaluationView || Math.sign($val) === 1) {
+  if (!DSM.betterEvaluationView?.settings.floats || Math.sign($val) === 1) {
     return {
       type: "decimal",
       value: "0"
@@ -190,8 +142,7 @@ if ($val === 0) {
 
 *Description* `Distinguish NaN, +∞, -∞ in lists.`
 
-I'm really confused. The match doesn't work without *worker_only*, but the code
-runs on the main page, not the worker.
+Needs 'worker_only' because this goes into the `shared_module_source`
 
 *worker_only*
 
@@ -214,7 +165,7 @@ function $truncatedLatexLabel($e, $t) {
     let $r = $numericLabel($e, $t);
     switch ($r.type) {
     case "undefined":
-        return DSM.betterEvaluationView ? $r.value : 'undefined';
+        return DSM.betterEvaluationView?.settings.floats ? $r.value : 'undefined';
     case "decimal":
         return $r.value;
     case "scientific":

@@ -18,8 +18,7 @@
     "#parsing/*": "src/parsing/*",
     "#metadata/*": "metadata/*",
     "#utils/*": "src/utils/*",
-    "#common/*": "common/*",
-    "#string-width": "string-width"
+    "#common/*": "common/*"
   },
   "repository": {
     "type": "git",

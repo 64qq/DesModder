@@ -1,10 +1,10 @@
 import { Inserter, PluginController } from "../../plugins/PluginController";
 import { MenuFunc } from "./components/Menu";
-import PillboxContainer from "./components/PillboxContainer";
-import PillboxMenu from "./components/PillboxMenu";
 import { ComponentTemplate, DCGView } from "#DCGView";
 import { plugins, PluginID, PluginConfigItemKey } from "#plugins/index.ts";
 import { createElementWrapped } from "../../preload/replaceElement";
+import { PillboxButton } from "./components/PillboxButton";
+import { PillboxContainer } from "./components/PillboxContainer";
 import { MergeUnion } from "#utils/utils.ts";
 import { SettingValue } from "#plugins/config.ts";
 
@@ -28,7 +28,7 @@ export default class PillboxMenus extends PluginController<undefined> {
   // array of IDs
   pillboxButtonsOrder: string[] = ["main-menu"];
   // map button ID to setup
-  pillboxButtons: Record<string, PillboxButton> = {
+  pillboxButtons: Record<string, PillboxButtonSpec> = {
     "main-menu": {
       id: "main-menu",
       tooltip: "menu-desmodder-tooltip",
@@ -47,7 +47,13 @@ export default class PillboxMenus extends PluginController<undefined> {
     );
   }
 
-  pillboxButtonsView(horizontal: boolean): Inserter {
+  pushToPillboxList(list: { push: (buttonId: string) => void }) {
+    for (const buttonId of this.pillboxButtonsOrder) {
+      list.push("dsm-" + buttonId);
+    }
+  }
+
+  pillboxContainerView(horizontal: boolean): Inserter {
     return () =>
       createElementWrapped(PillboxContainer, {
         pm: () => this,
@@ -55,11 +61,11 @@ export default class PillboxMenus extends PluginController<undefined> {
       });
   }
 
-  pillboxMenuView(horizontal: boolean): Inserter {
-    if (this.pillboxMenuOpen === null) return undefined;
+  pillboxButtonView(buttonId: string, horizontal: boolean): Inserter {
     return () =>
-      createElementWrapped(PillboxMenu, {
+      createElementWrapped(PillboxButton, {
         pm: () => this,
+        buttonId: DCGView.const(buttonId),
         horizontal: DCGView.const(horizontal),
       });
   }
@@ -68,7 +74,7 @@ export default class PillboxMenus extends PluginController<undefined> {
     this.cc.dispatch({ type: "tick" });
   }
 
-  addPillboxButton(info: PillboxButton) {
+  addPillboxButton(info: PillboxButtonSpec) {
     this.pillboxButtons[info.id] = info;
     this.pillboxButtonsOrder.push(info.id);
     this.updateMenuView();
@@ -167,7 +173,7 @@ export default class PillboxMenus extends PluginController<undefined> {
   }
 }
 
-interface PillboxButton {
+interface PillboxButtonSpec {
   id: string;
   tooltip: string;
   iconClass: string;

@@ -1,5 +1,5 @@
-import Aug from "./AugState";
-import TextAST from "../TextAST";
+import { Aug } from ".";
+import { TextAST } from "..";
 
 export function number(x: number): Aug.Latex.Constant {
   return {

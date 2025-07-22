@@ -1,31 +1,33 @@
 import { ComponentChild, jsx } from "#DCGView";
 import { StaticMathQuillView } from "#components";
+import { TypedConstantValue, ValueType } from "#globals";
+import { ColorValueType } from "..";
 
-function _ColorEvaluation(val: () => string | string[]) {
+type TypedConstantColorValue = TypedConstantValue<ColorValueType>;
+
+function _ColorEvaluation(val: TypedConstantColorValue) {
   return (
     <div class="dcg-evaluation-view__wrapped-value">
       <StaticMathQuillView
         latex={() => {
-          const value = val();
+          const { valueType, value } = val;
           const length = 6;
-          if (Array.isArray(value)) {
-            const color = value.map(rgb);
+          if (valueType === ValueType.ListOfColor) {
             return (
               "\\operatorname{rgb}\\left(\\left[" +
-              color
+              value
                 .slice(0, length)
                 .map((clist) => `\\left(${clist.join(",")}\\right)`)
                 .join(",") +
-              (color.length > length
+              (value.length > length
                 ? `\\textcolor{gray}{...\\mathit{${
-                    color.length - length
+                    value.length - length
                   }\\ more}}`
                 : "") +
               "\\right]\\right)"
             );
           } else {
-            const color = rgb(value);
-            return "\\operatorname{rgb}\\left(" + color.join(",") + "\\right)";
+            return "\\operatorname{rgb}\\left(" + value.join(",") + "\\right)";
           }
         }}
       />
@@ -34,7 +36,7 @@ function _ColorEvaluation(val: () => string | string[]) {
 }
 
 export function ColorEvaluation(
-  val: () => string | string[],
+  val: TypedConstantColorValue,
   swatch: ComponentChild
 ) {
   return (
@@ -43,14 +45,4 @@ export function ColorEvaluation(
       {swatch}
     </span>
   );
-}
-
-// https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
-function rgb(hex: string) {
-  const result = /^#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)!;
-  return [
-    parseInt(result[1], 16),
-    parseInt(result[2], 16),
-    parseInt(result[3], 16),
-  ];
 }

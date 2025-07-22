@@ -1,9 +1,13 @@
 import { defineConfig } from "#plugins/config.ts";
 
 export const configList = defineConfig<BetterEvaluationViewSettings>()({
+  floats: {
+    type: "boolean",
+    default: false,
+  },
   lists: {
     type: "boolean",
-    default: true,
+    default: false,
   },
   colors: {
     type: "boolean",
@@ -17,6 +21,7 @@ export const configList = defineConfig<BetterEvaluationViewSettings>()({
 });
 
 export interface BetterEvaluationViewSettings {
+  floats: boolean;
   lists: boolean;
   colors: boolean;
   colorLists: boolean;

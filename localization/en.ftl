@@ -19,7 +19,7 @@ category-integrations-name = Integrations
 
 ## GLesmos
 GLesmos-name = GLesmos
-GLesmos-desc = Render implicits on the GPU. Disabled on tab reload. Can cause the UI to slow down or freeze in rare cases; reload the page if you have issues.
+GLesmos-desc = Render implicits on the GPU. Can cause the UI to slow down or freeze in rare cases; reload the page if you have issues.
 GLesmos-label-toggle-glesmos = Render with GLesmos
 GLesmos-confirm-lines = Confirm lines
 GLesmos-confirm-lines-body = GLesmos line rendering can be slow. Be careful, especially for a list of layers.
@@ -132,7 +132,7 @@ builtin-settings-opt-zoomButtons-name = Show Zoom Buttons
 builtin-settings-opt-zoomButtons-desc = {""}
 builtin-settings-opt-keypad-name = Show keypad
 builtin-settings-opt-keypad-desc = {""}
-builtin-settings-opt-showPerformanceMeter-name = Show performance meter 
+builtin-settings-opt-showPerformanceMeter-name = Show performance meter
 builtin-settings-opt-showPerformanceMeter-desc = {""}
 builtin-settings-opt-showIDs-name = Show IDs
 builtin-settings-opt-showIDs-desc = {""}
@@ -233,6 +233,8 @@ performance-info-other = Other
 ## Better Evaluation View
 better-evaluation-view-name = Better Evaluation View
 better-evaluation-view-desc = Displays list elements, colors, and undefined values
+better-evaluation-view-opt-floats-name = Advanced floating point
+better-evaluation-view-opt-floats-desc = Show NaN/∞/-∞ instead of undefined, and '-0' for negative 0.
 better-evaluation-view-opt-lists-name = Show list elements
 better-evaluation-view-opt-lists-desc = Show list elements instead of list length
 better-evaluation-view-opt-colors-name = Show colors
@@ -362,3 +364,9 @@ paste-image-name = Paste Image
 paste-image-desc = Lets you paste image files to import them at once.
 paste-image-error-images-not-enabled = Image insertion is not enabled for this graph.
 paste-image-error-another-upload-in-progress = Retry after another upload in progress is completed.
+
+## Quake Pro
+quake-pro-name = Quake Pro
+quake-pro-desc = Allows you to increase the Field of View beyond the 3D calculator's regular limit.
+quake-pro-opt-magnification-name = Zoom Multiplier
+quake-pro-opt-magnification-desc = Increase the viewport's zoom limit by using this as the multiplier.

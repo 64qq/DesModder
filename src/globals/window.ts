@@ -16,7 +16,7 @@ import {
 } from "../components/desmosComponents";
 import { PluginID } from "../plugins";
 import { OptionalGenericSettings } from "../plugins/config";
-import { ItemModel } from "./models";
+import { ItemModel, ValueType, ValueTypeMap } from "./models";
 import { GraphState } from "../../graph-state";
 import { Calc, CalcController } from "./Calc";
 import { format } from "#i18n";
@@ -94,21 +94,21 @@ type ComponentEmitType = "decimalString" | "latex" | (string & {});
 interface Mathtools {
   Label: {
     truncatedLatexLabel: (
-      label: number,
+      label: ValueTypeMap[ValueType.Number],
       labelOptions?: LabelOptionsBase
     ) => string;
     pointLabel: (
-      label: [number, number],
+      label: ValueTypeMap[ValueType.Point],
       labelOptions?: LabelOptionsBase,
       emitComponentsAs?: ComponentEmitType
     ) => string;
     point3dLabel: (
-      label: [number, number, number],
+      label: ValueTypeMap[ValueType.Point3D],
       labelOptions?: LabelOptionsBase,
       emitComponentsAs?: ComponentEmitType
     ) => string;
     complexNumberLabel: (
-      label: [number, number],
+      label: ValueTypeMap[ValueType.Complex],
       labelOptions?: LabelOptionsBase & {
         alwaysEmitImaginary?: boolean;
       },

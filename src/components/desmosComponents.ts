@@ -139,7 +139,7 @@ export abstract class InlineMathInputViewComponent extends ClassComponent<{
 /** General InlineMathInputView, without any defaults filled in */
 export const InlineMathInputViewGeneral = Fragile.InlineMathInputView;
 
-export const { If, For, IfElse, Input, Switch, SwitchUnion } =
+export const { For, If, IfElse, Input, Switch, SwitchUnion } =
   DCGView.Components;
 export function Match<Disc extends { type: Key }, Key extends string>(
   discriminant: () => Disc,
@@ -158,7 +158,7 @@ export function Match<Disc extends { type: Key }, Key extends string>(
 
 export abstract class DStaticMathquillViewComponent extends ClassComponent<{
   latex: string;
-  config: unknown;
+  config: MathQuillConfig;
 }> {}
 
 export const DStaticMathquillView = Fragile.StaticMathquillView;
@@ -281,6 +281,15 @@ export class FooterView extends Component<ModelAndController> {
     const template = exprTemplate(this);
     return children(children(template)[0])[2];
   }
+}
+
+export abstract class EvaluationContainerComponent extends ClassComponent<{
+  controller: CalcController;
+  id: () => string;
+}> {
+  abstract controller: CalcController;
+  // abstract cachedEvaluationRHS: EvaluationRHS;
+  // abstract getEvaluationRHS(): EvaluationRHS;
 }
 
 function exprTemplate(

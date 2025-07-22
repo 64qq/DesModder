@@ -1,5 +1,4 @@
 import { PluginController } from "../PluginController";
-import "./compact.css";
 import "./compact.less";
 import { CompactViewSettings, configList } from "./config";
 

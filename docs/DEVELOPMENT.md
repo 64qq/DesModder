@@ -25,7 +25,8 @@ If you're looking for in-depth development documentation, see:
 First follow the instructions above in "Setup Environment".
 
 1. You will want the Prettier and Typescript packages installed for your editor.
-   - VS Code comes bundled with Typescript support. Its Prettier extension is called "Prettier - Code Formatter," and I suggest the settings
+   - VS Code comes bundled with Typescript support.
+   - VS Code should automatically suggest installing the Prettier extension. If not, its Prettier extension is called [`Prettier - Code Formatter`](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode), and I suggest the settings
      ```json
      "editor.formatOnSave": true,
      "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -87,7 +88,7 @@ In this section, we will create a plugin which will simply change the displayed 
 
 5. Load the plugin: In `src/plugins/index.ts`, add `import ChangeUsername from "./change-username"` near the top and `changeUsername: ChangeUsername,` in `keyToPlugin` in the middle of the file.
    - Add `get changeUsername () { return this.ep["change-username"]; }` at the end of the class `TransparentPlugins`.
-6. Add the plugin to the menu: in `src/plugins/pillbox-menus/components/Menu.tsx`, add the plugin ID `"change-username"` to the category list `visual` in `categoryPlugins`.
+6. Add the plugin to the menu: in `src/core-plugins/pillbox-menus/components/Menu.tsx`, add the plugin ID `"change-username"` to the category list `visual` in `categoryPlugins`.
    - after reloading the webpage (assuming you're running `npm run dev`), a new plugin should appear in the list in [desmos.com/calculator](https://desmos.com/calculator).
 7. Commit the changes to your fork
    - `git add .`
