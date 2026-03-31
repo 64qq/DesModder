@@ -1,4 +1,5 @@
-import { type Calc, Fragile, Private } from "#globals";
+import { type Calc, Fragile, Private, Toast } from "#globals";
+import { Formattable, fromFormattable } from "#i18n";
 
 const { evaluateLatex } = Fragile;
 
@@ -27,6 +28,23 @@ export function getCurrentGraphTitle(calc: Calc): string | undefined {
 
 export function tick(calc: Calc): void {
   calc.controller.dispatch({ type: "tick" });
+}
+
+export type ToastFormattable = Omit<Toast, "message"> & {
+  message: Formattable;
+};
+
+function isPlainToast(toast: Toast | ToastFormattable): toast is Toast {
+  return typeof toast.message === "string";
+}
+
+export function showToast(calc: Calc, toast: Toast | ToastFormattable): void {
+  calc.controller.showToast(
+    isPlainToast(toast)
+      ? toast
+      : { ...toast, message: fromFormattable(toast.message) }
+  );
+  tick(calc);
 }
 
 type CalcUtilFunction<
@@ -59,6 +77,7 @@ export const createCalcUtils = bindCalc({
   EvaluateSingleExpression,
   getCurrentGraphTitle,
   tick,
+  showToast,
 } satisfies CalcUtils);
 
 export const { List } = Fragile;
