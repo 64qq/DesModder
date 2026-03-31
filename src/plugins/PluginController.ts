@@ -1,5 +1,6 @@
 import { ConfigItem, GenericSettings } from ".";
 import DSM from "#DSM";
+import { createCalcUtils } from "#utils/depUtils.ts";
 
 export class PluginController<
   Settings extends GenericSettings | undefined = undefined,
@@ -24,6 +25,8 @@ export class PluginController<
    * un-register dispatcher calls, clear intervals/timeouts, etc.
    */
   afterDisable() {}
+
+  protected readonly util = createCalcUtils(this.calc);
 }
 
 export type Replacer<T = any> = undefined | ((old: T) => any);

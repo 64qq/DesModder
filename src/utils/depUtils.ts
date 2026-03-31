@@ -25,4 +25,35 @@ export function getCurrentGraphTitle(calc: Calc): string | undefined {
   return calc._calc.globalHotkeys?.mygraphsController?.graphsController?.getCurrentGraphTitle?.();
 }
 
+type CalcUtilFunction<
+  P extends readonly unknown[] = readonly never[],
+  R = unknown,
+> = (calc: Calc, ...args: P) => R;
+type CalcUtilSig<F extends CalcUtilFunction> =
+  F extends CalcUtilFunction<infer P, infer R> ? [P, R] : never;
+type CalcUtilParams<F extends CalcUtilFunction> = CalcUtilSig<F>[0];
+type CalcUtilReturn<F extends CalcUtilFunction> = CalcUtilSig<F>[1];
+
+type CalcUtils = Record<string, CalcUtilFunction>;
+
+type BindCalc<U extends CalcUtils> = {
+  [K in keyof U]: (...args: CalcUtilParams<U[K]>) => CalcUtilReturn<U[K]>;
+};
+
+const bindCalc =
+  <const U extends CalcUtils>(calcUtils: U) =>
+  (calc: Calc) =>
+    Object.entries(calcUtils).reduce<BindCalc<CalcUtils>>(
+      (utils, [name, func]) => {
+        utils[name] = (...args) => func(calc, ...args);
+        return utils;
+      },
+      {}
+    ) as BindCalc<U>;
+
+export const createCalcUtils = bindCalc({
+  EvaluateSingleExpression,
+  getCurrentGraphTitle,
+} satisfies CalcUtils);
+
 export const { List } = Fragile;
