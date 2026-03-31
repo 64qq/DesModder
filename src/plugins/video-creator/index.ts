@@ -138,7 +138,7 @@ export default class VideoCreator extends PluginController {
   }
 
   updateView() {
-    this.cc.dispatch({ type: "tick" });
+    this.util.tick();
   }
 
   async tryInitFFmpeg() {

@@ -25,6 +25,10 @@ export function getCurrentGraphTitle(calc: Calc): string | undefined {
   return calc._calc.globalHotkeys?.mygraphsController?.graphsController?.getCurrentGraphTitle?.();
 }
 
+export function tick(calc: Calc): void {
+  calc.controller.dispatch({ type: "tick" });
+}
+
 type CalcUtilFunction<
   P extends readonly unknown[] = readonly never[],
   R = unknown,
@@ -54,6 +58,7 @@ const bindCalc =
 export const createCalcUtils = bindCalc({
   EvaluateSingleExpression,
   getCurrentGraphTitle,
+  tick,
 } satisfies CalcUtils);
 
 export const { List } = Fragile;
